@@ -166,3 +166,6 @@ flanatrigo/resources/tesseract
 
 # GIMP
 *.xcf
+
+# Config file
+config.json
