@@ -184,7 +184,7 @@ class PickerController(Controller):
                 self.selected_agent = item.name
                 self.gui.check_picker.setEnabled(True)
 
-    def on_check_picker_changed(self, state: bool):
+    def on_check_picker_change(self, state: bool):
         if state and self.gui.list_agents.currentItem():
             self.thread_event.set()
             self.gui.label_picker_state.show()
@@ -194,7 +194,7 @@ class PickerController(Controller):
             self.state = PickerState.MENU
             self._update_state_label()
 
-    def on_selected_item(self, item: QtWidgets.QListWidgetItem, _previous: QtWidgets.QListWidgetItem):
+    def on_item_select(self, item: QtWidgets.QListWidgetItem, _previous: QtWidgets.QListWidgetItem):
         self.config.picker_current_agent = getattr(item, 'name', None)
         self.save_config()
         if item:
@@ -204,4 +204,4 @@ class PickerController(Controller):
                 self.gui.check_picker.click()
             self.gui.check_picker.setEnabled(False)
 
-        self.on_check_picker_changed(self.gui.check_picker.isChecked())
+        self.on_check_picker_change(self.gui.check_picker.isChecked())

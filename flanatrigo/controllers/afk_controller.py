@@ -23,7 +23,10 @@ class AFKController(Controller):
         self.gui.line_afk_activate_button.add_selected_buttons(self.config.afk_activate_button)
         self.gui.line_afk_press_button.add_selected_buttons(self.config.afk_press_button)
 
-    def on_check_afk_changed(self, state: bool):
+    def on_activate_press(self):
+        self.gui.check_afk.click()
+
+    def on_check_afk_change(self, state: bool):
         def thread_target():
             while self.gui.check_afk.isChecked() and (buttons := self.gui.line_afk_press_button.text()):
                 if buttons.startswith('mouse'):
@@ -43,6 +46,3 @@ class AFKController(Controller):
         if not self.thread or not self.thread.is_alive():
             self.thread = threading.Thread(target=thread_target, daemon=True)
             self.thread.start()
-
-    def on_press_activate(self):
-        self.gui.check_afk.click()

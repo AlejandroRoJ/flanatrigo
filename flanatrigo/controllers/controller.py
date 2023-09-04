@@ -14,11 +14,11 @@ class Controller(Queueable, Salvable, ABC):
         super().__init__(cs_queue, config)
         self.gui = gui
 
-    def on_line_buttons_changed(self, line_edit: QtWidgets.QLineEdit):
+    def on_line_buttons_change(self, line_edit: QtWidgets.QLineEdit):
         setattr(self.config, line_edit.objectName()[len('line_'):], line_edit.text())
         self.save_config()
 
-    def on_spin_changed(
+    def on_spin_change(
         self,
         spin: QtWidgets.QAbstractSpinBox | QtWidgets.QDoubleSpinBox,
         slider: QtWidgets.QSlider

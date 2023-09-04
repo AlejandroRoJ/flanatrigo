@@ -113,7 +113,39 @@ class TriggerController(Controller):
         self.gui.line_trigger_activate_button.add_selected_buttons(self.config.trigger_activate_button)
         self.gui.line_trigger_mode_button.add_selected_buttons(self.config.trigger_mode_button)
 
-    def on_check_detector_changed(self, state: bool):
+    def on_activate_press(self):
+        if self.activation_locked:
+            return
+
+        if self.config.rage_mode:
+            self._start_rage_timer()
+        else:
+            self.cs_queue.put(('trigger', True))
+        self.gui.check_trigger.setChecked(True)
+
+    def on_activate_release(self):
+        if self.activation_locked:
+            return
+
+        self._stop_rage_timer()
+        self.cs_queue.put(('trigger', False))
+        self.gui.check_trigger.setChecked(False)
+
+    def on_change_mode_press(self):
+        self.config.rage_mode = not self.config.rage_mode
+        self.cs_queue.put(('rage_mode', self.config.rage_mode))
+        self.save_config()
+        self._set_rage_theme(self.config.rage_mode)
+        if self.gui.check_trigger.isChecked():
+            self.cs_queue.put(('trigger', False))
+            if self.config.rage_mode:
+                self._start_rage_timer()
+            else:
+                self.cs_queue.put(('trigger', True))
+
+        self._update_rage_mouse_hook()
+
+    def on_check_detector_change(self, state: bool):
         if state:
             self.open_crosshair_window()
         elif not self.timer_crosshair_window.isActive():
@@ -121,7 +153,7 @@ class TriggerController(Controller):
         self.config.detector_always_visible = state
         self.save_config()
 
-    def on_check_trigger_changed(self, state: bool):
+    def on_check_trigger_change(self, state: bool):
         if state and self.config.rage_mode:
             self._start_rage_timer()
         else:
@@ -137,7 +169,7 @@ class TriggerController(Controller):
     def on_double_press_activate(self):
         self.gui.check_trigger.click()
 
-    def on_line_hexadecimal_changed(self, text: str):
+    def on_line_hexadecimal_change(self, text: str):
         text = text.replace('#', '')
         if text.startswith('0x'):
             text = text[2:]
@@ -153,46 +185,14 @@ class TriggerController(Controller):
             self.set_color(int(text[:2], 16), int(text[2:4], 16), int(text[4:], 16))
             self.gui.line_hexadecimal.setText(f'#{text.lower()}')
 
-    def on_press_activate(self):
-        if self.activation_locked:
-            return
-
-        if self.config.rage_mode:
-            self._start_rage_timer()
-        else:
-            self.cs_queue.put(('trigger', True))
-        self.gui.check_trigger.setChecked(True)
-
-    def on_press_change_mode(self):
-        self.config.rage_mode = not self.config.rage_mode
-        self.cs_queue.put(('rage_mode', self.config.rage_mode))
-        self.save_config()
-        self._set_rage_theme(self.config.rage_mode)
-        if self.gui.check_trigger.isChecked():
-            self.cs_queue.put(('trigger', False))
-            if self.config.rage_mode:
-                self._start_rage_timer()
-            else:
-                self.cs_queue.put(('trigger', True))
-
-        self._update_rage_mouse_hook()
-
-    def on_spin_changed(
+    def on_spin_change(
         self,
         spin: QtWidgets.QAbstractSpinBox | QtWidgets.QDoubleSpinBox,
         slider: QtWidgets.QSlider
     ) -> str:
-        attribute_name = super().on_spin_changed(spin, slider)
+        attribute_name = super().on_spin_change(spin, slider)
         self.cs_queue.put((attribute_name, spin.value()))
         return attribute_name
-
-    def on_release_activate(self):
-        if self.activation_locked:
-            return
-
-        self._stop_rage_timer()
-        self.cs_queue.put(('trigger', False))
-        self.gui.check_trigger.setChecked(False)
 
     def open_color_dialog(self):
         color_dialog = QtWidgets.QColorDialog(QtGui.qRgb(self.gui.spin_red.value(), self.gui.spin_green.value(), self.gui.spin_blue.value()), self.gui)
