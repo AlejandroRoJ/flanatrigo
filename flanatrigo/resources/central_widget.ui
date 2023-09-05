@@ -930,7 +930,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QLabel" name="label_trigger_activate_button">
+             <widget class="QLabel" name="label_trigger_activation_button">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                 <horstretch>0</horstretch>
@@ -949,7 +949,7 @@
              </widget>
             </item>
             <item>
-             <widget class="HotkeyLineEdit" name="line_trigger_activate_button">
+             <widget class="HotkeyLineEdit" name="line_trigger_activation_button">
               <property name="contextMenuPolicy">
                <enum>Qt::PreventContextMenu</enum>
               </property>
@@ -1344,7 +1344,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QLabel" name="label_afk_activate_button">
+             <widget class="QLabel" name="label_afk_activation_button">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                 <horstretch>0</horstretch>
@@ -1362,7 +1362,7 @@
              </widget>
             </item>
             <item>
-             <widget class="HotkeyLineEdit" name="line_afk_activate_button">
+             <widget class="HotkeyLineEdit" name="line_afk_activation_button">
               <property name="font">
                <font>
                 <pointsize>12</pointsize>

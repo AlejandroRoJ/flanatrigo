@@ -110,10 +110,10 @@ class TriggerController(Controller):
         self.gui.spin_rage_immobility.editingFinished.emit()
         self.gui.spin_rage_tolerance.setValue(self.config.rage_tolerance)
         self.gui.spin_rage_tolerance.editingFinished.emit()
-        self.gui.line_trigger_activate_button.add_selected_buttons(self.config.trigger_activate_button)
+        self.gui.line_trigger_activation_button.add_selected_buttons(self.config.trigger_activation_button)
         self.gui.line_trigger_mode_button.add_selected_buttons(self.config.trigger_mode_button)
 
-    def on_activate_press(self):
+    def on_activation_press(self):
         if self.activation_locked:
             return
 
@@ -123,7 +123,7 @@ class TriggerController(Controller):
             self.cs_queue.put(('trigger', True))
         self.gui.check_trigger.setChecked(True)
 
-    def on_activate_release(self):
+    def on_activation_release(self):
         if self.activation_locked:
             return
 
@@ -166,7 +166,7 @@ class TriggerController(Controller):
         elif not state and self.deactivated_player:
             self.deactivated_player.play()
 
-    def on_double_press_activate(self):
+    def on_double_press_activation(self):
         self.gui.check_trigger.click()
 
     def on_line_hexadecimal_change(self, text: str):

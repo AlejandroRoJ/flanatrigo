@@ -19,20 +19,20 @@ class CentralWidget(QtWidgets.QWidget):
     label_tolerance: QtWidgets.QLabel
     label_rage_immobility: QtWidgets.QLabel
     label_rage_tolerance: QtWidgets.QLabel
-    label_trigger_activate_button: QtWidgets.QLabel
+    label_trigger_activation_button: QtWidgets.QLabel
     label_trigger_mode_button: QtWidgets.QLabel
     label_picker_state: QtWidgets.QLabel
     label_picker_delay: QtWidgets.QLabel
     label_picker_duration: QtWidgets.QLabel
     label_picker_steps: QtWidgets.QLabel
-    label_afk_activate_button: QtWidgets.QLabel
+    label_afk_activation_button: QtWidgets.QLabel
     label_afk_press_button: QtWidgets.QLabel
     label_afk_interval: QtWidgets.QLabel
 
     line_hexadecimal: QtWidgets.QLineEdit
-    line_trigger_activate_button: HotkeyLineEdit
+    line_trigger_activation_button: HotkeyLineEdit
     line_trigger_mode_button: HotkeyLineEdit
-    line_afk_activate_button: HotkeyLineEdit
+    line_afk_activation_button: HotkeyLineEdit
     line_afk_press_button: HotkeyLineEdit
 
     button_color: QtWidgets.QPushButton
@@ -111,12 +111,12 @@ class CentralWidget(QtWidgets.QWidget):
         self.afk_controller = afk_controller
 
         self.line_hexadecimal.textChanged.connect(self.trigger_controller.on_line_hexadecimal_change)
-        self.line_trigger_activate_button.add_handlers(self.trigger_controller.on_activate_press, self.trigger_controller.on_activate_release, self.trigger_controller.on_double_press_activate)
-        self.line_trigger_activate_button.textChanged.connect(lambda: self.trigger_controller.on_line_buttons_change(self.line_trigger_activate_button))
+        self.line_trigger_activation_button.add_handlers(self.trigger_controller.on_activation_press, self.trigger_controller.on_activation_release, self.trigger_controller.on_double_press_activation)
+        self.line_trigger_activation_button.textChanged.connect(lambda: self.trigger_controller.on_line_buttons_change(self.line_trigger_activation_button))
         self.line_trigger_mode_button.add_handlers(self.trigger_controller.on_change_mode_press, double_press_handler=self.trigger_controller.on_change_mode_press)
         self.line_trigger_mode_button.textChanged.connect(lambda: self.trigger_controller.on_line_buttons_change(self.line_trigger_mode_button))
-        self.line_afk_activate_button.add_handlers(self.afk_controller.on_activate_press, double_press_handler=self.afk_controller.on_activate_press)
-        self.line_afk_activate_button.textChanged.connect(lambda: self.afk_controller.on_line_buttons_change(self.line_afk_activate_button))
+        self.line_afk_activation_button.add_handlers(self.afk_controller.on_activation_press, double_press_handler=self.afk_controller.on_activation_press)
+        self.line_afk_activation_button.textChanged.connect(lambda: self.afk_controller.on_line_buttons_change(self.line_afk_activation_button))
         self.line_afk_press_button.textChanged.connect(lambda: self.afk_controller.on_line_buttons_change(self.line_afk_press_button))
 
         self.button_color.clicked.connect(self.trigger_controller.open_color_dialog)

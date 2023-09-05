@@ -18,7 +18,7 @@ class Config:
     rage_mode: bool = constants.RAGE_MODE
     rage_immobility: float = constants.RAGE_IMMOBILITY
     rage_tolerance: int = constants.RAGE_TOLERANCE
-    trigger_activate_button: str = constants.TRIGGER_ACTIVATE_BUTTON
+    trigger_activation_button: str = constants.TRIGGER_ACTIVATION_BUTTON
     trigger_mode_button: str = constants.TRIGGER_MODE_BUTTON
 
     picker_delay: float = constants.PICKER_DELAY
@@ -27,7 +27,7 @@ class Config:
     picker_current_agent: str = constants.PICKER_CURRENT_AGENT
 
     afk_interval: float = constants.AFK_INTERVAL
-    afk_activate_button: str = constants.AFK_ACTIVATE_BUTTON
+    afk_activation_button: str = constants.AFK_ACTIVATION_BUTTON
     afk_press_button: str = constants.AFK_PRESS_BUTTON
 
     def load(self):
