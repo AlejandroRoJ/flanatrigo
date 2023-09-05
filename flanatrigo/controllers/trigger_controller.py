@@ -2,6 +2,7 @@ import pathlib
 import subprocess
 import threading
 
+import keyboard
 import mouse
 from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
 
@@ -21,6 +22,7 @@ class TriggerController(Controller):
         self.timer_crosshair_window = QtCore.QTimer()
         self.timer_crosshair_window.setSingleShot(True)
         self.rage_timer = None
+        self.rage_keyboard_hook = None
         self.rage_mouse_hook = None
 
         self.timer_crosshair_window.timeout.connect(self.close_crosshair_window)
@@ -36,15 +38,17 @@ class TriggerController(Controller):
             subprocess.run((constants.FFMPEG_PATH, '-i', str(sound_path), str(sound_path.with_suffix('.wav'))))
             self._load_audio(name)
 
-    def _on_mouse_move(self, event: mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent):
+    def _on_device_event(self, event: keyboard.KeyboardEvent | mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent):
+        try:
+            if event.name in self.config.trigger_activation_button.split('+'):
+                return
+        except AttributeError:
+            pass
+
         if (
-            isinstance(event, mouse.MoveEvent)
-            and
             self.config.rage_mode
             and
             self.gui.check_trigger.isChecked()
-            and
-            self.config.rage_immobility
         ):
             self.cs_queue.put(('trigger', False))
             self._start_rage_timer()
@@ -69,12 +73,17 @@ class TriggerController(Controller):
         if self.rage_timer:
             self.rage_timer.cancel()
 
-    def _update_rage_mouse_hook(self):
-        if self.config.rage_mode:
-            self.rage_mouse_hook = mouse.hook(self._on_mouse_move)
-        elif self.rage_mouse_hook:
+    def _update_rage_hooks(self):
+        if self.rage_keyboard_hook:
+            keyboard.unhook(self.rage_keyboard_hook)
+            self.rage_keyboard_hook = None
+        if self.rage_mouse_hook:
             mouse.unhook(self.rage_mouse_hook)
             self.rage_mouse_hook = None
+
+        if self.config.rage_mode:
+            self.rage_keyboard_hook = keyboard.hook(self._on_device_event)
+            self.rage_mouse_hook = mouse.hook(self._on_device_event)
 
     def close_crosshair_window(self, force=False):
         if self.crosshair_window and (force or not self.gui.check_detector.isChecked()):
@@ -106,7 +115,7 @@ class TriggerController(Controller):
         self.gui.spin_tolerance.setValue(self.config.tolerance)
         self.gui.spin_tolerance.editingFinished.emit()
         self.cs_queue.put(('rage_mode', self.config.rage_mode))
-        self._update_rage_mouse_hook()
+        self._update_rage_hooks()
         self._set_rage_theme(self.config.rage_mode)
         self.gui.spin_rage_immobility.setValue(self.config.rage_immobility)
         self.gui.spin_rage_immobility.editingFinished.emit()
@@ -145,7 +154,7 @@ class TriggerController(Controller):
             else:
                 self.cs_queue.put(('trigger', True))
 
-        self._update_rage_mouse_hook()
+        self._update_rage_hooks()
 
     def on_check_detector_change(self, state: bool):
         if state:
