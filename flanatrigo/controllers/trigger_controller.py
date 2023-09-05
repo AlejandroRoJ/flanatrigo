@@ -40,7 +40,7 @@ class TriggerController(Controller):
 
     def _on_device_event(self, event: keyboard.KeyboardEvent | mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent):
         try:
-            if event.name in self.config.trigger_activation_button.split('+'):
+            if event.name in self.config.trigger_activation_button.split('+') + ['mayusculas', 'shift']:
                 return
         except AttributeError:
             pass
