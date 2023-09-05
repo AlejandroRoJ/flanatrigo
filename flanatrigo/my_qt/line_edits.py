@@ -79,10 +79,11 @@ class HotkeyLineEdit(QtWidgets.QLineEdit):
                     self.add_selected_button(name)
                 else:
                     self.current_buttons.discard(name)
-            case mouse.ButtonEvent() if self.rect().contains(self.mapFromGlobal(QtGui.QCursor.pos())):
+            case mouse.ButtonEvent():
                 button = f'mouse_{event.button}'
                 if event.event_type != mouse.UP:
-                    self.add_selected_button(button)
+                    if self.rect().contains(self.mapFromGlobal(QtGui.QCursor.pos())):
+                        self.add_selected_button(button)
                 else:
                     self.current_buttons.discard(button)
 
