@@ -29,7 +29,9 @@ class TriggerController(Controller):
         sound_path = pathlib.Path(f'{constants.SOUNDS_PATH}/{name}.wav')
         if sound_path.exists():
             setattr(self, f'{name}_player', QtMultimedia.QSoundEffect())
-            getattr(self, f'{name}_player').setSource(QtCore.QUrl.fromLocalFile(str(sound_path)))
+            player = getattr(self, f'{name}_player')
+            player.setSource(QtCore.QUrl.fromLocalFile(str(sound_path)))
+            player.setVolume(constants.ACTIVATION_VOLUME)
         elif sound_path := next(pathlib.Path(constants.SOUNDS_PATH).glob(f'{name}.*'), None):
             subprocess.run((constants.FFMPEG_PATH, '-i', str(sound_path), str(sound_path.with_suffix('.wav'))))
             self._load_audio(name)
