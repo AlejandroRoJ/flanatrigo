@@ -16,13 +16,6 @@ def _pass_function():
 
 
 class HotkeyLineEdit(QtWidgets.QLineEdit):
-    SPANISH_KEYS_TRANSLATION = (
-        ('mayusculas', 'shift'), ('flecha', ''), ('arriba', 'up'), ('abajo', 'down'), ('izquierda', 'left'),
-        ('derecha', 'right'), ('bloq mayus', 'caps lock'), ('supr', 'del'), ('inicio', 'home'), ('fin', 'end'),
-        ('imp pant', 'print screen'), ('bloq despl', 'scroll lock'), ('pausa', 'pause'), ('re pag', 'page up'),
-        ('av pag', 'page down'), ('aplicación', 'menu')
-    )
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.press_handler = _pass_function
@@ -72,7 +65,7 @@ class HotkeyLineEdit(QtWidgets.QLineEdit):
         match event:
             case keyboard.KeyboardEvent():
                 name = event.name
-                for spanish, english in self.SPANISH_KEYS_TRANSLATION:
+                for spanish, english in constants.SPANISH_KEYS_TRANSLATION:
                     name = name.replace(spanish, english)
                 name = keyboard.normalize_name(name).lower().strip()
                 if event.event_type == keyboard.KEY_DOWN:
