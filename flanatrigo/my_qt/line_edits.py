@@ -30,15 +30,12 @@ class HotkeyLineEdit(QtWidgets.QLineEdit):
         self.double_press_handler = _pass_function
         self.config_keyboard_hook = None
         self.config_mouse_hook = None
-        self.current_keyboard_buttons = set()
-        self.current_mouse_buttons = set()
-        self.selected_mouse_buttons = {}
-        self.selected_hotkey_hook = None
-        self.selected_keyboard_release_hooks = []
+        self.current_buttons = set()
+        self.selected_buttons = {}
+        self.selected_keyboard_hooks = []
         self.selected_mouse_hooks = []
         self.are_all_selected_activated = False
         self.repeatable = False
-        self.was_released = True
 
         self.setReadOnly(True)
         layout = QtWidgets.QHBoxLayout(self)
@@ -59,18 +56,13 @@ class HotkeyLineEdit(QtWidgets.QLineEdit):
         self.textChanged.connect(lambda: self.button_clear.setVisible(bool(self.text())))
 
     def _on_all_selected_activated(self):
-        if not self.repeatable and not self.was_released:
-            return
-
-        self.was_released = False
-
         def thread_target():
             if self.are_all_selected_activated:
                 self.double_press_handler()
             else:
                 self.press_handler()
                 self.are_all_selected_activated = True
-                time.sleep(constants.CENTRAL_WIDGET_DOUBLE_BUTTON_WAITING_SECONDS)
+                time.sleep(constants.DOUBLE_BUTTON_WAITING_SECONDS)
             self.are_all_selected_activated = False
 
         thread = threading.Thread(target=thread_target, daemon=True)
@@ -86,58 +78,61 @@ class HotkeyLineEdit(QtWidgets.QLineEdit):
                 if event.event_type == keyboard.KEY_DOWN:
                     self.add_selected_button(name)
                 else:
-                    self.current_keyboard_buttons.discard(name)
+                    self.current_buttons.discard(name)
             case mouse.ButtonEvent() if self.rect().contains(self.mapFromGlobal(QtGui.QCursor.pos())):
                 button = f'mouse_{event.button}'
                 if event.event_type != mouse.UP:
                     self.add_selected_button(button)
                 else:
-                    self.current_mouse_buttons.discard(button)
+                    self.current_buttons.discard(button)
 
-    def _on_selected_keyboard_release(self, _button):
-        self.was_released = True
-        self.release_handler()
+    def _on_selected_keyboard_press(self, button):
+        self._on_selected_press(button.name)
 
-    def _on_selected_mouse_press(self, button):
+    def _on_selected_keyboard_release(self, button):
+        self._on_selected_release(button.name)
+
+    def _on_selected_press(self, button):
         def thread_target():
-            self.selected_mouse_buttons[button] = True
-            if all(self.selected_mouse_buttons.values()):
+            self.selected_buttons[button] = True
+            if all(self.selected_buttons.values()):
                 self._on_all_selected_activated()
-            else:
-                time.sleep(constants.CENTRAL_WIDGET_MOUSE_HOTKEY_WAITING_SECONDS)
-            self.selected_mouse_buttons[button] = False
 
-        if self.rect().contains(self.mapFromGlobal(QtGui.QCursor.pos())):
+        if (
+            not self.repeatable
+            and
+            self.selected_buttons[button]
+            or
+            self.rect().contains(self.mapFromGlobal(QtGui.QCursor.pos()))
+        ):
             return
 
         thread = threading.Thread(target=thread_target, daemon=True)
         thread.start()
 
-    def _on_selected_mouse_release(self, button):
-        self.selected_mouse_buttons[button] = False
-        self.was_released = True
+    def _on_selected_release(self, button):
+        self.selected_buttons[button] = False
         self.release_handler()
 
-    def _unhook_keyboard(self):
-        try:
-            keyboard.remove_hotkey(self.selected_hotkey_hook)
-        except (KeyError, ValueError):
-            pass
-        for keyboard_hook in self.selected_keyboard_release_hooks:
+    def _unhook_keyboard_selected_hooks(self):
+        for keyboard_hook in self.selected_keyboard_hooks:
             try:
                 keyboard.unhook(keyboard_hook)
             except (KeyError, ValueError):
                 pass
-        self.selected_hotkey_hook = None
-        self.selected_keyboard_release_hooks.clear()
+        self.selected_keyboard_hooks.clear()
 
-    def _unhook_mouse(self):
+    def _unhook_mouse_selected_hooks(self):
         for mouse_hook in self.selected_mouse_hooks:
             try:
                 mouse.unhook(mouse_hook)
             except ValueError:
                 pass
         self.selected_mouse_hooks.clear()
+
+    def _unhook_selected_hooks(self):
+        self._unhook_keyboard_selected_hooks()
+        self._unhook_mouse_selected_hooks()
 
     def add_double_press_handler(self, double_press_handler: Callable[[], Any], repeatable=False):
         self.double_press_handler = double_press_handler
@@ -163,27 +158,24 @@ class HotkeyLineEdit(QtWidgets.QLineEdit):
         self.release_handler = release_handler
 
     def add_selected_button(self, button: str):
-        if button.startswith('mouse'):
-            self.current_mouse_buttons.add(button)
-            self.selected_mouse_buttons = {button: False for button in self.current_mouse_buttons}
-            self._unhook_keyboard()
-            self._unhook_mouse()
-            for button in self.current_mouse_buttons:
+        if not button or button in self.current_buttons:
+            return
+
+        self.current_buttons.add(button)
+        self.selected_buttons = {button: False for button in self.current_buttons}
+        self.setText('+'.join(self.current_buttons))
+        self._unhook_selected_hooks()
+        for button in self.current_buttons:
+            if button.startswith('mouse'):
                 self.selected_mouse_hooks.extend((
-                    mouse.on_button(self._on_selected_mouse_press, (button,), (button[len('mouse_'):],), (mouse.DOWN, mouse.DOUBLE)),
-                    mouse.on_button(self._on_selected_mouse_release, (button,), (button[len('mouse_'):],), (mouse.UP,))
+                    mouse.on_button(self._on_selected_press, (button,), (button[len('mouse_'):],), (mouse.DOWN, mouse.DOUBLE)),
+                    mouse.on_button(self._on_selected_release, (button,), (button[len('mouse_'):],), (mouse.UP,))
                 ))
-            self.setText('+'.join(self.current_mouse_buttons))
-        else:
-            self.current_keyboard_buttons.add(button)
-            hotkey_name = keyboard.get_hotkey_name(self.current_keyboard_buttons)
-            self.selected_mouse_buttons.clear()
-            self._unhook_keyboard()
-            self._unhook_mouse()
-            self.selected_hotkey_hook = keyboard.add_hotkey(hotkey_name, self._on_all_selected_activated)
-            for button in self.current_keyboard_buttons:
-                self.selected_keyboard_release_hooks.append(keyboard.on_release_key(button, self._on_selected_keyboard_release))
-            self.setText(hotkey_name)
+            else:
+                self.selected_keyboard_hooks.extend((
+                    keyboard.on_press_key(button, self._on_selected_keyboard_press),
+                    keyboard.on_release_key(button, self._on_selected_keyboard_release)
+                ))
 
     def add_selected_buttons(self, buttons: str):
         self.setText(buttons)
@@ -191,14 +183,12 @@ class HotkeyLineEdit(QtWidgets.QLineEdit):
         for button in buttons.split('+'):
             self.add_selected_button(button)
 
-        self.current_keyboard_buttons.clear()
-        self.current_mouse_buttons.clear()
+        self.current_buttons.clear()
 
     def clear(self):
         super().clear()
-        self.selected_mouse_buttons.clear()
-        self._unhook_keyboard()
-        self._unhook_mouse()
+        self.selected_buttons.clear()
+        self._unhook_selected_hooks()
         self.window().setFocus()
 
     def focusInEvent(self, event: QtGui.QFocusEvent):
