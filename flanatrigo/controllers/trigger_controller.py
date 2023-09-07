@@ -24,6 +24,8 @@ class TriggerController(Controller):
         self.activated_player = None
         self.deactivated_player = None
         self.default_color = self.gui.palette().button().color()
+        self.is_trigger_activated = False
+        self.is_rage_activated = False
         self.timer_crosshair_window = QtCore.QTimer()
         self.timer_crosshair_window.setSingleShot(True)
         self.trigger_timer = None
@@ -62,11 +64,25 @@ class TriggerController(Controller):
     def _send_trigger_attribute(self, name: str, value: Any):
         self.cs_queue.put((name, value))
 
+    def _send_start_rage(self):
+        if not self.is_rage_activated:
+            self.cs_queue.put(('rage_mode', True))
+            self.is_rage_activated = True
+
     def _send_start_trigger(self):
-        self.cs_queue.put(('trigger', True))
+        if not self.is_trigger_activated:
+            self.cs_queue.put(('trigger', True))
+            self.is_trigger_activated = True
+
+    def _send_stop_rage(self):
+        if self.is_rage_activated:
+            self.cs_queue.put(('rage_mode', False))
+            self.is_rage_activated = False
 
     def _send_stop_trigger(self):
-        self.cs_queue.put(('trigger', False))
+        if self.is_trigger_activated:
+            self.cs_queue.put(('trigger', False))
+            self.is_trigger_activated = False
 
     def _start_rage_timer(self):
         self.rage_timer = threading.Timer(self.config.rage_immobility, self._start_rage_trigger)
@@ -74,18 +90,18 @@ class TriggerController(Controller):
 
     def _start_rage_trigger(self):
         self._send_stop_trigger()
-        self.cs_queue.put(('rage_mode', True))
+        self._send_start_rage()
         if not self.trigger_timer or not self.trigger_timer.is_alive():
             self._send_start_trigger()
 
     def _start_trigger(self, restart=False):
         if self.config.rage_mode:
             if self.config.rage_immobility:
-                self.cs_queue.put(('rage_mode', False))
+                self._send_stop_rage()
                 self._stop_rage_timer()
                 self._start_rage_timer()
             else:
-                self.cs_queue.put(('rage_mode', True))
+                self._send_start_rage()
 
         if restart and self.config.cadence:
             self._send_stop_trigger()
@@ -105,7 +121,7 @@ class TriggerController(Controller):
     def _stop_trigger(self):
         self._stop_trigger_timer()
         self._stop_rage_timer()
-        self.cs_queue.put(('rage_mode', False))
+        self._send_stop_rage()
         self._send_stop_trigger()
 
     def _stop_trigger_timer(self):
