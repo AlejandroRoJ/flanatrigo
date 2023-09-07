@@ -15,6 +15,7 @@ class Config:
     detector_vertical: int = constants.DETECTOR_VERTICAL
     color: tuple[int, int, int] = constants.COLOR
     tolerance: int = constants.TOLERANCE
+    cadence: float = constants.CADENCE
     rage_mode: bool = constants.RAGE_MODE
     rage_immobility: float = constants.RAGE_IMMOBILITY
     rage_tolerance: int = constants.RAGE_TOLERANCE

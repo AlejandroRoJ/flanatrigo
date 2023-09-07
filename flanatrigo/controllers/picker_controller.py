@@ -168,11 +168,8 @@ class PickerController(Controller):
         self.gui.check_picker.setEnabled(False)
         self.gui.check_picker.setChecked(constants.PICKER_STATE)
         self.gui.spin_picker_delay.setValue(self.config.picker_delay)
-        self.gui.spin_picker_delay.editingFinished.emit()
         self.gui.spin_picker_duration.setValue(self.config.picker_duration)
-        self.gui.spin_picker_duration.editingFinished.emit()
         self.gui.spin_picker_steps.setValue(self.config.picker_steps)
-        self.gui.spin_picker_steps.editingFinished.emit()
 
         for path in constants.AGENTS_FULL_PATH.iterdir():
             item = QtWidgets.QListWidgetItem()

@@ -1,6 +1,8 @@
+import multiprocessing
 import pathlib
 import subprocess
 import threading
+from typing import Any
 
 import keyboard
 import mouse
@@ -8,12 +10,15 @@ from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
 
 import constants
 from controllers.controller import Controller
+from models.config import Config
+from my_qt.spin_boxes import NoWheelDoubleSpinBox, NoWheelSpinBox
 from my_qt.windows import CrosshairWindow
 
 
 class TriggerController(Controller):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, cs_queue: multiprocessing.Queue, config: Config, *args, **kwargs):
+        super().__init__(config, *args, **kwargs)
+        self.cs_queue = cs_queue
         self.crosshair_window: CrosshairWindow | None = None
         self.activation_locked = False
         self.activated_player = None
@@ -33,7 +38,7 @@ class TriggerController(Controller):
             setattr(self, f'{name}_player', QtMultimedia.QSoundEffect())
             player = getattr(self, f'{name}_player')
             player.setSource(QtCore.QUrl.fromLocalFile(str(sound_path)))
-            player.setVolume(constants.ACTIVATION_VOLUME)
+            player.setVolume(self.config.volume / 100)
         elif sound_path := next(pathlib.Path(constants.SOUNDS_PATH).glob(f'{name}.*'), None):
             subprocess.run((constants.FFMPEG_PATH, '-i', str(sound_path), str(sound_path.with_suffix('.wav'))))
             self._load_audio(name)
@@ -45,33 +50,46 @@ class TriggerController(Controller):
         except AttributeError:
             pass
 
-        if (
-            self.config.rage_mode
-            and
-            self.gui.check_trigger.isChecked()
-        ):
-            self.cs_queue.put(('trigger', False))
-            self._start_rage_timer()
+        if self.gui.check_trigger.isChecked():
+            self._start_trigger()
 
-    def _set_rage_theme(self, state: bool):
-        palette = self.gui.palette()
-        if state:
-            palette.setColor(palette.ColorRole.Button, QtGui.QColor.fromRgb(*constants.RAGE_COLOR))
-        else:
-            palette.setColor(palette.ColorRole.Button, self.default_color)
-        self.gui.setPalette(palette)
+    def _send_trigger_attribute(self, name: str, value: Any):
+        self.cs_queue.put((name, value))
+
+    def _send_start_trigger(self):
+        self.cs_queue.put(('trigger', True))
+
+    def _send_stop_trigger(self):
+        self.cs_queue.put(('trigger', False))
 
     def _start_rage_timer(self):
-        self._stop_rage_timer()
-        if self.config.rage_immobility:
-            self.rage_timer = threading.Timer(self.config.rage_immobility, lambda: self.cs_queue.put(('trigger', True)))
-            self.rage_timer.start()
-        else:
-            self.cs_queue.put(('trigger', True))
+        self.rage_timer = threading.Timer(self.config.rage_immobility, self._start_rage_trigger)
+        self.rage_timer.start()
+
+    def _start_rage_trigger(self):
+        self._send_stop_trigger()
+        self.cs_queue.put(('rage_mode', True))
+        self._send_start_trigger()
+
+    def _start_trigger(self):
+        if self.config.rage_mode:
+            if self.config.rage_immobility:
+                self.cs_queue.put(('rage_mode', False))
+                self._stop_trigger()
+                self._start_rage_timer()
+            else:
+                self.cs_queue.put(('rage_mode', True))
+
+        self._send_start_trigger()
 
     def _stop_rage_timer(self):
         if self.rage_timer:
             self.rage_timer.cancel()
+
+    def _stop_trigger(self):
+        self._stop_rage_timer()
+        self.cs_queue.put(('rage_mode', False))
+        self._send_stop_trigger()
 
     def _update_rage_hooks(self):
         if self.rage_keyboard_hook:
@@ -84,6 +102,14 @@ class TriggerController(Controller):
         if self.config.rage_mode:
             self.rage_keyboard_hook = keyboard.hook(self._on_device_event)
             self.rage_mouse_hook = mouse.hook(self._on_device_event)
+
+    def _update_rage_theme(self):
+        palette = self.gui.palette()
+        if self.config.rage_mode:
+            palette.setColor(palette.ColorRole.Button, QtGui.QColor.fromRgb(*constants.RAGE_COLOR))
+        else:
+            palette.setColor(palette.ColorRole.Button, self.default_color)
+        self.gui.setPalette(palette)
 
     def close_crosshair_window(self, force=False):
         if self.crosshair_window and (force or not self.gui.check_detector.isChecked()):
@@ -101,26 +127,22 @@ class TriggerController(Controller):
     def load_config(self):
         self.config.load()
 
+        screen_size = QtWidgets.QApplication.screens()[0].size()
+        self.cs_queue.put(('screen_size', (screen_size.width(), screen_size.height())))
         self.load_audio()
         self.gui.check_trigger.setChecked(constants.TRIGGER_STATE)
         self.activation_locked = constants.TRIGGER_STATE
         self.set_color(*self.config.color)
         self.gui.check_detector.setChecked(self.config.detector_always_visible)
         self.gui.spin_detector_size.setValue(self.config.detector_size)
-        self.gui.spin_detector_size.editingFinished.emit()
         self.gui.spin_detector_horizontal.setValue(self.config.detector_horizontal)
-        self.gui.spin_detector_horizontal.editingFinished.emit()
         self.gui.spin_detector_vertical.setValue(self.config.detector_vertical)
-        self.gui.spin_detector_vertical.editingFinished.emit()
         self.gui.spin_tolerance.setValue(self.config.tolerance)
-        self.gui.spin_tolerance.editingFinished.emit()
-        self.cs_queue.put(('rage_mode', self.config.rage_mode))
+        self.gui.spin_cadence.setValue(self.config.cadence)
         self._update_rage_hooks()
-        self._set_rage_theme(self.config.rage_mode)
+        self._update_rage_theme()
         self.gui.spin_rage_immobility.setValue(self.config.rage_immobility)
-        self.gui.spin_rage_immobility.editingFinished.emit()
         self.gui.spin_rage_tolerance.setValue(self.config.rage_tolerance)
-        self.gui.spin_rage_tolerance.editingFinished.emit()
         self.gui.line_trigger_activation_button.add_selected_buttons(self.config.trigger_activation_button)
         self.gui.line_trigger_mode_button.add_selected_buttons(self.config.trigger_mode_button)
 
@@ -128,32 +150,25 @@ class TriggerController(Controller):
         if self.activation_locked:
             return
 
-        if self.config.rage_mode:
-            self._start_rage_timer()
-        else:
-            self.cs_queue.put(('trigger', True))
+        self._start_trigger()
         self.gui.check_trigger.setChecked(True)
 
     def on_activation_release(self):
         if self.activation_locked:
             return
 
-        self._stop_rage_timer()
-        self.cs_queue.put(('trigger', False))
+        self._stop_trigger()
         self.gui.check_trigger.setChecked(False)
 
     def on_change_mode_press(self):
         self.config.rage_mode = not self.config.rage_mode
-        self.cs_queue.put(('rage_mode', self.config.rage_mode))
         self.save_config()
-        self._set_rage_theme(self.config.rage_mode)
-        if self.gui.check_trigger.isChecked():
-            self.cs_queue.put(('trigger', False))
-            if self.config.rage_mode:
-                self._start_rage_timer()
-            else:
-                self.cs_queue.put(('trigger', True))
 
+        if self.gui.check_trigger.isChecked():
+            self._stop_trigger()
+            self._start_trigger()
+
+        self._update_rage_theme()
         self._update_rage_hooks()
 
     def on_check_detector_change(self, state: bool):
@@ -165,11 +180,10 @@ class TriggerController(Controller):
         self.save_config()
 
     def on_check_trigger_change(self, state: bool):
-        if state and self.config.rage_mode:
-            self._start_rage_timer()
+        if state:
+            self._start_trigger()
         else:
-            self._stop_rage_timer()
-            self.cs_queue.put(('trigger', state))
+            self._stop_trigger()
 
         self.activation_locked = state
         if state and self.activated_player:
@@ -198,11 +212,11 @@ class TriggerController(Controller):
 
     def on_spin_change(
         self,
-        spin: QtWidgets.QAbstractSpinBox | QtWidgets.QDoubleSpinBox,
+        spin: NoWheelSpinBox | NoWheelDoubleSpinBox,
         slider: QtWidgets.QSlider
     ) -> str:
         attribute_name = super().on_spin_change(spin, slider)
-        self.cs_queue.put((attribute_name, spin.value()))
+        self._send_trigger_attribute(attribute_name, spin.value())
         return attribute_name
 
     def on_spin_volume_change(self, value: int):
@@ -259,5 +273,4 @@ class TriggerController(Controller):
 
         self.config.color = (red, green, blue)
         self.save_config()
-
-        self.cs_queue.put(('color', (red, green, blue)))
+        self._send_trigger_attribute('color', self.config.color)

@@ -7,19 +7,15 @@ from controllers.others_controller import OthersController
 from controllers.picker_controller import PickerController
 from controllers.trigger_controller import TriggerController
 from models.config import Config
-from models.queueable import Queueable
 from models.salvable import Salvable
 from my_qt.bases import MixinMeta
 from my_qt.windows import MainWindow
 
 
-class MyQtApp(Queueable, Salvable, QtWidgets.QApplication, metaclass=MixinMeta):
-    def __init__(self, cs_queue: multiprocessing.Queue, config: Config()):
-        super().__init__(cs_queue, config)
+class MyQtApp(Salvable, QtWidgets.QApplication, metaclass=MixinMeta):
+    def __init__(self, cs_queue: multiprocessing.Queue, config: Config):
+        super().__init__(config)
         self.setStyle('fusion')
-
-        screen_size = QtWidgets.QApplication.screens()[0].size()
-        cs_queue.put(('screen_size', (screen_size.width(), screen_size.height())))
 
         self.main_window = MainWindow(config)
         self.trigger_controller = TriggerController(cs_queue, config, self.main_window.central_widget)

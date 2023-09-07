@@ -7,6 +7,12 @@ class AgileSlider(QtWidgets.QSlider):
         self.default_highlight_color = self.palette().highlight().color()
         self.set_os_colors(os_colors)
 
+    def event(self, event: QtCore.QEvent) -> bool:
+        if event.type() == QtCore.QEvent.Wheel:
+            return False
+
+        return super().event(event)
+
     def mousePressEvent(self, event: QtGui.QMouseEvent):
         if event.button() is QtCore.Qt.MouseButton.LeftButton:
             event = QtGui.QMouseEvent(
