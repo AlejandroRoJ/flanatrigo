@@ -19,13 +19,14 @@ class TriggerController(Controller):
     def __init__(self, cs_queue: multiprocessing.Queue, config: Config, *args, **kwargs):
         super().__init__(config, *args, **kwargs)
         self.cs_queue = cs_queue
+        self.can_open_crosshair_window = True
+        self.is_trigger_activated = False
+        self.is_rage_activated = False
         self.crosshair_window: CrosshairWindow | None = None
         self.activation_locked = False
         self.activated_player = None
         self.deactivated_player = None
         self.default_color = self.gui.palette().button().color()
-        self.is_trigger_activated = False
-        self.is_rage_activated = False
         self.timer_crosshair_window = QtCore.QTimer()
         self.timer_crosshair_window.setSingleShot(True)
         self.trigger_timer = None
@@ -177,13 +178,15 @@ class TriggerController(Controller):
         screen_size = QtWidgets.QApplication.screens()[0].size()
         self.cs_queue.put(('screen_size', (screen_size.width(), screen_size.height())))
         self.load_audio()
+        self.can_open_crosshair_window = False
         self.gui.check_trigger.setChecked(constants.TRIGGER_STATE)
         self.activation_locked = constants.TRIGGER_STATE
-        self.set_color(*self.config.color)
         self.gui.check_detector.setChecked(self.config.detector_always_visible)
         self.gui.spin_detector_size.setValue(self.config.detector_size)
         self.gui.spin_detector_horizontal.setValue(self.config.detector_horizontal)
         self.gui.spin_detector_vertical.setValue(self.config.detector_vertical)
+        self.can_open_crosshair_window = True
+        self.set_color(*self.config.color)
         self.gui.spin_tolerance.setValue(self.config.tolerance)
         self.gui.spin_cadence.setValue(self.config.cadence)
         self._update_hooks()
@@ -292,6 +295,9 @@ class TriggerController(Controller):
         self.set_color(*color_dialog.selectedColor().getRgb()[:-1])
 
     def open_crosshair_window(self, screen=0):
+        if not self.can_open_crosshair_window:
+            return
+
         color = (self.gui.spin_red.value(), self.gui.spin_green.value(), self.gui.spin_blue.value())
         size = self.gui.spin_detector_size.value()
         horizontal_offset = self.gui.spin_detector_horizontal.value()
