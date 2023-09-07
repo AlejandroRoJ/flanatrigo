@@ -82,7 +82,7 @@ class TriggerController(Controller):
         if self.config.rage_mode:
             if self.config.rage_immobility:
                 self.cs_queue.put(('rage_mode', False))
-                self._stop_trigger()
+                self._stop_rage_timer()
                 self._start_rage_timer()
             else:
                 self.cs_queue.put(('rage_mode', True))
