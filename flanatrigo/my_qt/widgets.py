@@ -28,6 +28,7 @@ class CentralWidget(QtWidgets.QWidget):
     label_afk_activation_button: QtWidgets.QLabel
     label_afk_press_button: QtWidgets.QLabel
     label_afk_interval: QtWidgets.QLabel
+    label_volume: QtWidgets.QLabel
 
     line_hexadecimal: QtWidgets.QLineEdit
     line_trigger_activation_button: HotkeyLineEdit
@@ -50,6 +51,7 @@ class CentralWidget(QtWidgets.QWidget):
     slider_picker_duration: AgileSlider
     slider_picker_steps: AgileSlider
     slider_afk_interval: AgileSlider
+    slider_volume: AgileSlider
 
     spin_detector_size: QtWidgets.QSpinBox
     spin_detector_horizontal: QtWidgets.QSpinBox
@@ -84,6 +86,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.trigger_controller = None
         self.picker_controller = None
         self.afk_controller = None
+        self.others_controller = None
 
         self.check_trigger = Switch(self.tab_trigger, track_radius=8, thumb_radius=10, os_colors=False)
         self.tab_trigger.layout().insertWidget(0, self.check_trigger)
@@ -109,6 +112,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.trigger_controller = trigger_controller
         self.picker_controller = picker_controller
         self.afk_controller = afk_controller
+        self.others_controller = others_controller
 
         self.line_hexadecimal.textChanged.connect(self.trigger_controller.on_line_hexadecimal_change)
         self.line_trigger_activation_button.add_handlers(self.trigger_controller.on_activation_press, self.trigger_controller.on_activation_release, self.trigger_controller.on_double_press_activation)
@@ -136,6 +140,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.slider_picker_duration.valueChanged.connect(lambda: self._slider_to_spin(self.slider_picker_duration, self.spin_picker_duration))
         self.slider_picker_steps.valueChanged.connect(lambda: self._slider_to_spin(self.slider_picker_steps, self.spin_picker_steps))
         self.slider_afk_interval.valueChanged.connect(lambda: self._slider_to_spin(self.slider_afk_interval, self.spin_afk_interval))
+        self.slider_volume.valueChanged.connect(lambda: self._slider_to_spin(self.slider_volume, self.spin_volume))
 
         self.spin_red.valueChanged.connect(lambda: self.trigger_controller.set_color(red=self.spin_red.value()))
         self.spin_green.valueChanged.connect(lambda: self.trigger_controller.set_color(green=self.spin_green.value()))

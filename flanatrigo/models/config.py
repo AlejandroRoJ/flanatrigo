@@ -30,6 +30,8 @@ class Config:
     afk_activation_button: str = constants.AFK_ACTIVATION_BUTTON
     afk_press_button: str = constants.AFK_PRESS_BUTTON
 
+    volume: int = constants.VOLUME
+
     def load(self):
         try:
             config = json.loads(constants.CONFIG_PATH.read_text())

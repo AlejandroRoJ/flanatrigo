@@ -205,6 +205,12 @@ class TriggerController(Controller):
         self.cs_queue.put((attribute_name, spin.value()))
         return attribute_name
 
+    def on_spin_volume_change(self, value: int):
+        if self.activated_player:
+            self.activated_player.setVolume(value / 100)
+        if self.deactivated_player:
+            self.deactivated_player.setVolume(value / 100)
+
     def open_color_dialog(self):
         color_dialog = QtWidgets.QColorDialog(QtGui.qRgb(self.gui.spin_red.value(), self.gui.spin_green.value(), self.gui.spin_blue.value()), self.gui)
 
