@@ -26,7 +26,10 @@ class TriggerController(Controller):
         self.default_color = self.gui.palette().button().color()
         self.timer_crosshair_window = QtCore.QTimer()
         self.timer_crosshair_window.setSingleShot(True)
+        self.trigger_timer = None
         self.rage_timer = None
+        self.cadence_mouse_press_hook = None
+        self.cadence_mouse_double_hook = None
         self.rage_keyboard_hook = None
         self.rage_mouse_hook = None
 
@@ -43,7 +46,10 @@ class TriggerController(Controller):
             subprocess.run((constants.FFMPEG_PATH, '-i', str(sound_path), str(sound_path.with_suffix('.wav'))))
             self._load_audio(name)
 
-    def _on_device_event(self, event: keyboard.KeyboardEvent | mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent):
+    def _on_device_event(
+        self,
+        event: keyboard.KeyboardEvent | mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent = None
+    ):
         try:
             if event.name in self.config.trigger_activation_button.split('+') + ['mayusculas', 'shift']:
                 return
@@ -51,7 +57,7 @@ class TriggerController(Controller):
             pass
 
         if self.gui.check_trigger.isChecked():
-            self._start_trigger()
+            self._start_trigger(restart=event is None)
 
     def _send_trigger_attribute(self, name: str, value: Any):
         self.cs_queue.put((name, value))
@@ -69,9 +75,10 @@ class TriggerController(Controller):
     def _start_rage_trigger(self):
         self._send_stop_trigger()
         self.cs_queue.put(('rage_mode', True))
-        self._send_start_trigger()
+        if not self.trigger_timer or not self.trigger_timer.is_alive():
+            self._send_start_trigger()
 
-    def _start_trigger(self):
+    def _start_trigger(self, restart=False):
         if self.config.rage_mode:
             if self.config.rage_immobility:
                 self.cs_queue.put(('rage_mode', False))
@@ -80,24 +87,48 @@ class TriggerController(Controller):
             else:
                 self.cs_queue.put(('rage_mode', True))
 
-        self._send_start_trigger()
+        if restart and self.config.cadence:
+            self._send_stop_trigger()
+            self._stop_trigger_timer()
+            self._start_trigger_timer()
+        elif not self.trigger_timer or not self.trigger_timer.is_alive():
+            self._send_start_trigger()
+
+    def _start_trigger_timer(self):
+        self.trigger_timer = threading.Timer(self.config.cadence, self._send_start_trigger)
+        self.trigger_timer.start()
 
     def _stop_rage_timer(self):
         if self.rage_timer:
             self.rage_timer.cancel()
 
     def _stop_trigger(self):
+        self._stop_trigger_timer()
         self._stop_rage_timer()
         self.cs_queue.put(('rage_mode', False))
         self._send_stop_trigger()
 
-    def _update_rage_hooks(self):
+    def _stop_trigger_timer(self):
+        if self.trigger_timer:
+            self.trigger_timer.cancel()
+
+    def _update_hooks(self):
+        if self.cadence_mouse_press_hook:
+            mouse.unhook(self.cadence_mouse_press_hook)
+            self.cadence_mouse_press_hook = None
+        if self.cadence_mouse_double_hook:
+            mouse.unhook(self.cadence_mouse_double_hook)
+            self.cadence_mouse_double_hook = None
         if self.rage_keyboard_hook:
             keyboard.unhook(self.rage_keyboard_hook)
             self.rage_keyboard_hook = None
         if self.rage_mouse_hook:
             mouse.unhook(self.rage_mouse_hook)
             self.rage_mouse_hook = None
+
+        if self.config.cadence:
+            self.cadence_mouse_press_hook = mouse.on_pressed(self._on_device_event)
+            self.cadence_mouse_double_hook = mouse.on_double_click(self._on_device_event)
 
         if self.config.rage_mode:
             self.rage_keyboard_hook = keyboard.hook(self._on_device_event)
@@ -139,7 +170,7 @@ class TriggerController(Controller):
         self.gui.spin_detector_vertical.setValue(self.config.detector_vertical)
         self.gui.spin_tolerance.setValue(self.config.tolerance)
         self.gui.spin_cadence.setValue(self.config.cadence)
-        self._update_rage_hooks()
+        self._update_hooks()
         self._update_rage_theme()
         self.gui.spin_rage_immobility.setValue(self.config.rage_immobility)
         self.gui.spin_rage_tolerance.setValue(self.config.rage_tolerance)
@@ -169,7 +200,7 @@ class TriggerController(Controller):
             self._start_trigger()
 
         self._update_rage_theme()
-        self._update_rage_hooks()
+        self._update_hooks()
 
     def on_check_detector_change(self, state: bool):
         if state:
@@ -217,6 +248,10 @@ class TriggerController(Controller):
     ) -> str:
         attribute_name = super().on_spin_change(spin, slider)
         self._send_trigger_attribute(attribute_name, spin.value())
+
+        if attribute_name == 'cadence':
+            self._update_hooks()
+
         return attribute_name
 
     def on_spin_volume_change(self, value: int):
