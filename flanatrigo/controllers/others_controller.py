@@ -5,9 +5,6 @@ from controllers.controller import Controller
 
 
 class OthersController(Controller):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def load_config(self):
         self.config.load()
 
@@ -25,7 +22,7 @@ class OthersController(Controller):
         message_box.addButton(button_yes, QtWidgets.QMessageBox.ButtonRole.YesRole)
         message_box.addButton(button_no, QtWidgets.QMessageBox.ButtonRole.NoRole)
 
-        if message_box.exec():
+        if not message_box.exec():
             constants.CONFIG_PATH.unlink(missing_ok=True)
             self.config.load()
             QtWidgets.QApplication.instance().load_config()
