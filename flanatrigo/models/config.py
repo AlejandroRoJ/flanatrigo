@@ -40,7 +40,7 @@ class Config:
             constants.CONFIG_PATH.write_text('{}')
             config = {}
 
-        vars(self).update(config)
+        vars(self).update(vars(Config()) | config)
 
     def save(self):
         constants.CONFIG_PATH.write_text(json.dumps(vars(self)))

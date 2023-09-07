@@ -39,7 +39,7 @@ class CentralWidget(QtWidgets.QWidget):
     line_afk_press_button: HotkeyLineEdit
 
     button_color: QtWidgets.QPushButton
-    button_color: QtWidgets.QPushButton
+    button_restore_config: QtWidgets.QPushButton
 
     check_detector: QtWidgets.QCheckBox
 
@@ -135,6 +135,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.line_afk_press_button.textChanged.connect(lambda: self.afk_controller.on_line_buttons_change(self.line_afk_press_button))
 
         self.button_color.clicked.connect(self.trigger_controller.open_color_dialog)
+        self.button_restore_config.clicked.connect(self.others_controller.restore_config)
 
         self.check_trigger.clicked.connect(self.trigger_controller.on_check_trigger_change)
         self.check_detector.stateChanged.connect(self.trigger_controller.on_check_detector_change)
