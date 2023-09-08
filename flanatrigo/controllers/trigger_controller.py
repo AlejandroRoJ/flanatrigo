@@ -185,16 +185,32 @@ class TriggerController(Controller):
         self.gui.check_trigger.setChecked(constants.TRIGGER_STATE)
         self.activation_locked = constants.TRIGGER_STATE
         self.gui.check_detector.setChecked(self.config.detector_always_visible)
-        self.gui.spin_detector_size.setValue(self.config.detector_size)
-        self.gui.spin_detector_horizontal.setValue(self.config.detector_horizontal)
-        self.gui.spin_detector_vertical.setValue(self.config.detector_vertical)
+        self._set_slider_spin_value(
+            self.gui.spin_detector_size,
+            self.gui.slider_detector_size,
+            self.config.detector_size
+        )
+        self._set_slider_spin_value(
+            self.gui.spin_detector_horizontal,
+            self.gui.slider_detector_horizontal,
+            self.config.detector_horizontal
+        )
+        self._set_slider_spin_value(
+            self.gui.spin_detector_vertical,
+            self.gui.slider_detector_vertical,
+            self.config.detector_vertical
+        )
         self.can_open_crosshair_window = True
         self.set_color(*self.config.color)
         self.gui.spin_tolerance.setValue(self.config.tolerance)
-        self.gui.spin_cadence.setValue(self.config.cadence)
+        self._set_slider_spin_value(self.gui.spin_cadence, self.gui.slider_cadence, self.config.cadence)
         self._update_hooks()
         self._update_rage_theme()
-        self.gui.spin_rage_immobility.setValue(self.config.rage_immobility)
+        self._set_slider_spin_value(
+            self.gui.spin_rage_immobility,
+            self.gui.slider_rage_immobility,
+            self.config.rage_immobility
+        )
         self.gui.spin_rage_tolerance.setValue(self.config.rage_tolerance)
         self.gui.line_trigger_activation_button.add_selected_buttons(self.config.trigger_activation_button)
         self.gui.line_trigger_mode_button.add_selected_buttons(self.config.trigger_mode_button)

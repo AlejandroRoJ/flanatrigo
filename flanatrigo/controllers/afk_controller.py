@@ -18,8 +18,7 @@ class AFKController(Controller):
         self.config.load()
 
         self.gui.check_afk.setChecked(constants.AFK_STATE)
-        self.gui.spin_afk_interval.setValue(self.config.afk_interval)
-        self.gui.spin_afk_interval.editingFinished.emit()
+        self._set_slider_spin_value(self.gui.spin_afk_interval, self.gui.slider_afk_interval, self.config.afk_interval)
         self.gui.line_afk_activation_button.add_selected_buttons(self.config.afk_activation_button)
         self.gui.line_afk_press_button.add_selected_buttons(self.config.afk_press_button)
 

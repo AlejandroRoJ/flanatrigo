@@ -167,9 +167,13 @@ class PickerController(Controller):
 
         self.gui.check_picker.setEnabled(False)
         self.gui.check_picker.setChecked(constants.PICKER_STATE)
-        self.gui.spin_picker_delay.setValue(self.config.picker_delay)
-        self.gui.spin_picker_duration.setValue(self.config.picker_duration)
-        self.gui.spin_picker_steps.setValue(self.config.picker_steps)
+        self._set_slider_spin_value(self.gui.spin_picker_delay, self.gui.slider_picker_delay, self.config.picker_delay)
+        self._set_slider_spin_value(
+            self.gui.spin_picker_duration,
+            self.gui.slider_picker_duration,
+            self.config.picker_duration
+        )
+        self._set_slider_spin_value(self.gui.spin_picker_steps, self.gui.slider_picker_steps, self.config.picker_steps)
 
         for path in constants.AGENTS_FULL_PATH.iterdir():
             item = QtWidgets.QListWidgetItem()
