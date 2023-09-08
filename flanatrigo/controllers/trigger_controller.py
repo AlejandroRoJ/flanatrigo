@@ -330,6 +330,8 @@ class TriggerController(Controller):
         self.gui.spin_blue.setValue(blue)
         self.gui.line_hexadecimal.setText(f'#{hex((red << 16) + (green << 8) + blue)[2:]:0>6}')
         self.gui.button_color.setStyleSheet(f'background-color: rgb({red}, {green}, {blue})')
+        if self.crosshair_window:
+            self.open_crosshair_window()
 
         self.config.color = (red, green, blue)
         self.save_config()
