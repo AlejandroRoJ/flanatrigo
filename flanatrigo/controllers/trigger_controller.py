@@ -49,18 +49,23 @@ class TriggerController(Controller):
             subprocess.run((constants.FFMPEG_PATH, '-i', str(sound_path), str(sound_path.with_suffix('.wav'))))
             self._load_audio(name)
 
-    def _on_device_event(
-        self,
-        event: keyboard.KeyboardEvent | mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent = None
-    ):
+    def _on_device_event(self, event: keyboard.KeyboardEvent | mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent):
+        if not self.gui.check_trigger.isChecked():
+            return
+
         try:
             if event.name in self.config.trigger_activation_button.split('+') + ['mayusculas', 'shift']:
                 return
         except AttributeError:
             pass
 
+        self._start_trigger()
+
+    def _on_mouse_press(self):
         if self.gui.check_trigger.isChecked():
-            self._start_trigger(restart=event is None)
+            self._send_stop_trigger()
+            self._stop_trigger_timer()
+            self._start_trigger_timer()
 
     def _send_trigger_attribute(self, name: str, value: Any):
         self.cs_queue.put((name, value))
@@ -95,20 +100,18 @@ class TriggerController(Controller):
         if not self.trigger_timer or not self.trigger_timer.is_alive():
             self._send_start_trigger()
 
-    def _start_trigger(self, restart=False):
+    def _start_trigger(self):
         if self.config.rage_mode:
             if self.config.rage_immobility:
-                self._send_stop_rage()
                 self._stop_rage_timer()
+                if self.is_rage_activated:
+                    self._send_stop_trigger()
+                    self._send_stop_rage()
                 self._start_rage_timer()
             else:
                 self._send_start_rage()
 
-        if restart and self.config.cadence:
-            self._send_stop_trigger()
-            self._stop_trigger_timer()
-            self._start_trigger_timer()
-        elif not self.trigger_timer or not self.trigger_timer.is_alive():
+        if not self.trigger_timer or not self.trigger_timer.is_alive():
             self._send_start_trigger()
 
     def _start_trigger_timer(self):
@@ -144,8 +147,8 @@ class TriggerController(Controller):
             self.rage_mouse_hook = None
 
         if self.config.cadence:
-            self.cadence_mouse_press_hook = mouse.on_pressed(self._on_device_event)
-            self.cadence_mouse_double_hook = mouse.on_double_click(self._on_device_event)
+            self.cadence_mouse_press_hook = mouse.on_pressed(self._on_mouse_press)
+            self.cadence_mouse_double_hook = mouse.on_double_click(self._on_mouse_press)
 
         if self.config.rage_mode:
             self.rage_keyboard_hook = keyboard.hook(self._on_device_event)
