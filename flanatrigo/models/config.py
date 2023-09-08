@@ -50,5 +50,4 @@ class Config:
 
     def save(self):
         if not self._loads:
-            print(1)
             constants.CONFIG_PATH.write_text(json.dumps(vars(self)))
