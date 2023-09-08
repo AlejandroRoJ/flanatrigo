@@ -6,6 +6,8 @@ import constants
 
 @dataclass
 class Config:
+    _loads = 0
+
     pinned: bool = constants.PINNED
     tab: int = constants.TAB
 
@@ -41,6 +43,12 @@ class Config:
             config = {}
 
         vars(self).update(vars(Config()) | config)
+        self._loads += 1
 
     def save(self):
-        constants.CONFIG_PATH.write_text(json.dumps(vars(self)))
+        if not self._loads:
+            print(1)
+            constants.CONFIG_PATH.write_text(json.dumps(vars(self)))
+
+    def unload(self):
+        self._loads = max(0, self._loads - 1)

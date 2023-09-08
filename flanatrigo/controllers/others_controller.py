@@ -10,6 +10,8 @@ class OthersController(Controller):
 
         self.gui.spin_volume.setValue(self.config.volume)
 
+        self.config.unload()
+
     def restore_config(self):
         message_box = QtWidgets.QMessageBox(
             QtWidgets.QMessageBox.Icon.Question,
@@ -24,5 +26,4 @@ class OthersController(Controller):
 
         if not message_box.exec():
             constants.CONFIG_PATH.unlink(missing_ok=True)
-            self.config.load()
             QtWidgets.QApplication.instance().load_config()

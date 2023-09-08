@@ -23,6 +23,8 @@ class AFKController(Controller):
         self.gui.line_afk_activation_button.add_selected_buttons(self.config.afk_activation_button)
         self.gui.line_afk_press_button.add_selected_buttons(self.config.afk_press_button)
 
+        self.config.unload()
+
     def on_activation_press(self):
         self.gui.check_afk.click()
 

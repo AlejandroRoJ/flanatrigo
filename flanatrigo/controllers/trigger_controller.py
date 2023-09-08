@@ -199,6 +199,8 @@ class TriggerController(Controller):
         self.gui.line_trigger_activation_button.add_selected_buttons(self.config.trigger_activation_button)
         self.gui.line_trigger_mode_button.add_selected_buttons(self.config.trigger_mode_button)
 
+        self.config.unload()
+
     def on_activation_press(self):
         if self.activation_locked:
             return

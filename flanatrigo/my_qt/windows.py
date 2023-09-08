@@ -66,6 +66,8 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
         self.button_pin.setChecked(self.config.pinned)
         self.central_widget.tab.setCurrentIndex(self.config.tab)
 
+        self.config.unload()
+
     def maximize(self):
         if self.isMaximized():
             self.showNormal()
