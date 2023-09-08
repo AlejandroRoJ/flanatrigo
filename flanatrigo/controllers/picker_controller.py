@@ -181,7 +181,7 @@ class PickerController(Controller):
                 self.selected_agent = item.name
                 self.gui.check_picker.setEnabled(True)
 
-        self.config.unload()
+        self.config.release()
 
     def on_check_picker_change(self, state: bool):
         if state and self.gui.list_agents.currentItem():

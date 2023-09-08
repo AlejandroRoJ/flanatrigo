@@ -45,10 +45,10 @@ class Config:
         vars(self).update(vars(Config()) | config)
         self._loads += 1
 
+    def release(self):
+        self._loads = max(0, self._loads - 1)
+
     def save(self):
         if not self._loads:
             print(1)
             constants.CONFIG_PATH.write_text(json.dumps(vars(self)))
-
-    def unload(self):
-        self._loads = max(0, self._loads - 1)

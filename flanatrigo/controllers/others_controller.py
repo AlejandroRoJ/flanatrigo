@@ -10,7 +10,7 @@ class OthersController(Controller):
 
         self.gui.spin_volume.setValue(self.config.volume)
 
-        self.config.unload()
+        self.config.release()
 
     def restore_config(self):
         message_box = QtWidgets.QMessageBox(
