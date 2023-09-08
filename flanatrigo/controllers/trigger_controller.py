@@ -285,7 +285,10 @@ class TriggerController(Controller):
             self.deactivated_player.setVolume(value / 100)
 
     def open_color_dialog(self):
-        color_dialog = QtWidgets.QColorDialog(QtGui.qRgb(self.gui.spin_red.value(), self.gui.spin_green.value(), self.gui.spin_blue.value()), self.gui)
+        color_dialog = QtWidgets.QColorDialog(
+            QtGui.qRgb(self.gui.spin_red.value(), self.gui.spin_green.value(), self.gui.spin_blue.value()),
+            self.gui
+        )
 
         for i in range(16):
             color_dialog.setCustomColor(i, 0xffffff)
