@@ -32,6 +32,7 @@ class CentralWidget(QtWidgets.QWidget):
     label_afk_press_button: QtWidgets.QLabel
     label_afk_interval: QtWidgets.QLabel
     label_volume: QtWidgets.QLabel
+    label_version: QtWidgets.QLabel
 
     line_hexadecimal: QtWidgets.QLineEdit
     line_trigger_activation_button: HotkeyLineEdit

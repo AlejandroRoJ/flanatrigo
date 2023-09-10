@@ -9,6 +9,7 @@ class OthersController(Controller):
         self.config.load()
 
         self.gui.spin_volume.setValue(self.config.volume)
+        self.gui.label_version.setText(constants.VERSION)
 
         self.config.release()
 
