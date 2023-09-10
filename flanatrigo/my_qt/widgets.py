@@ -24,6 +24,7 @@ class CentralWidget(QtWidgets.QWidget):
     label_rage_immobility: QtWidgets.QLabel
     label_rage_tolerance: QtWidgets.QLabel
     label_picker_state: QtWidgets.QLabel
+    label_picker_activation_button: QtWidgets.QLabel
     label_picker_delay: QtWidgets.QLabel
     label_picker_duration: QtWidgets.QLabel
     label_picker_steps: QtWidgets.QLabel
@@ -35,6 +36,7 @@ class CentralWidget(QtWidgets.QWidget):
     line_hexadecimal: QtWidgets.QLineEdit
     line_trigger_activation_button: HotkeyLineEdit
     line_trigger_mode_button: HotkeyLineEdit
+    line_picker_activation_button: HotkeyLineEdit
     line_afk_activation_button: HotkeyLineEdit
     line_afk_press_button: HotkeyLineEdit
 
@@ -130,6 +132,8 @@ class CentralWidget(QtWidgets.QWidget):
         self.line_trigger_activation_button.textChanged.connect(lambda: self.trigger_controller.on_line_buttons_change(self.line_trigger_activation_button))
         self.line_trigger_mode_button.add_handlers(self.trigger_controller.on_change_mode_press, double_press_handler=self.trigger_controller.on_change_mode_press)
         self.line_trigger_mode_button.textChanged.connect(lambda: self.trigger_controller.on_line_buttons_change(self.line_trigger_mode_button))
+        self.line_picker_activation_button.add_handlers(self.picker_controller.on_activation_press, double_press_handler=self.picker_controller.on_activation_press)
+        self.line_picker_activation_button.textChanged.connect(lambda: self.picker_controller.on_line_buttons_change(self.line_picker_activation_button))
         self.line_afk_activation_button.add_handlers(self.afk_controller.on_activation_press, double_press_handler=self.afk_controller.on_activation_press)
         self.line_afk_activation_button.textChanged.connect(lambda: self.afk_controller.on_line_buttons_change(self.line_afk_activation_button))
         self.line_afk_press_button.textChanged.connect(lambda: self.afk_controller.on_line_buttons_change(self.line_afk_press_button))

@@ -24,6 +24,7 @@ class Config:
     trigger_activation_button: str = constants.TRIGGER_ACTIVATION_BUTTON
     trigger_mode_button: str = constants.TRIGGER_MODE_BUTTON
 
+    picker_activation_button: str = constants.PICKER_ACTIVATION_BUTTON
     picker_delay: float = constants.PICKER_DELAY
     picker_duration: float = constants.PICKER_DURATION
     picker_steps: int = constants.PICKER_STEPS

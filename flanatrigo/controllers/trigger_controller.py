@@ -183,6 +183,8 @@ class TriggerController(Controller):
         self.load_audio()
         self.gui.check_trigger.setChecked(constants.TRIGGER_STATE)
         self.activation_locked = constants.TRIGGER_STATE
+        self.gui.line_trigger_activation_button.add_selected_buttons(self.config.trigger_activation_button)
+        self.gui.line_trigger_mode_button.add_selected_buttons(self.config.trigger_mode_button)
         if not self.config.detector_always_visible:
             self.can_open_crosshair_window = False
         self.gui.check_detector.setChecked(self.config.detector_always_visible)
@@ -213,8 +215,6 @@ class TriggerController(Controller):
             self.config.rage_immobility
         )
         self.gui.spin_rage_tolerance.setValue(self.config.rage_tolerance)
-        self.gui.line_trigger_activation_button.add_selected_buttons(self.config.trigger_activation_button)
-        self.gui.line_trigger_mode_button.add_selected_buttons(self.config.trigger_mode_button)
 
         self.config.release()
 

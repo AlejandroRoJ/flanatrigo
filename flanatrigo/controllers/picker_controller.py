@@ -167,6 +167,7 @@ class PickerController(Controller):
 
         self.gui.check_picker.setEnabled(False)
         self.gui.check_picker.setChecked(constants.PICKER_STATE)
+        self.gui.line_picker_activation_button.add_selected_buttons(self.config.picker_activation_button)
         self._set_slider_spin_value(self.gui.spin_picker_delay, self.gui.slider_picker_delay, self.config.picker_delay)
         self._set_slider_spin_value(
             self.gui.spin_picker_duration,
@@ -186,6 +187,9 @@ class PickerController(Controller):
                 self.gui.check_picker.setEnabled(True)
 
         self.config.release()
+
+    def on_activation_press(self):
+        self.gui.check_picker.click()
 
     def on_check_picker_change(self, state: bool):
         if state and self.gui.list_agents.currentItem():
