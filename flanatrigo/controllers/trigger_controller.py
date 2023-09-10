@@ -181,9 +181,10 @@ class TriggerController(Controller):
         screen_size = QtWidgets.QApplication.screens()[0].size()
         self.cs_queue.put(('screen_size', (screen_size.width(), screen_size.height())))
         self.load_audio()
-        self.can_open_crosshair_window = False
         self.gui.check_trigger.setChecked(constants.TRIGGER_STATE)
         self.activation_locked = constants.TRIGGER_STATE
+        if not self.config.detector_always_visible:
+            self.can_open_crosshair_window = False
         self.gui.check_detector.setChecked(self.config.detector_always_visible)
         self._set_slider_spin_value(
             self.gui.spin_detector_size,
