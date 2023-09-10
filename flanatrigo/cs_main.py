@@ -34,6 +34,8 @@ def main(python_queue: multiprocessing.Queue):
     color = constants.COLOR
     tolerance = constants.TOLERANCE
 
+    CSTrigger.clickDelay = int(constants.CLICK_DELAY * 100)
+    CSTrigger.testMode = constants.CS_TEST_MODE
     CSTrigger.rageMode = rage_mode
     update_size()
     update_color()
