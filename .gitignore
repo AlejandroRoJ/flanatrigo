@@ -169,3 +169,8 @@ flanatrigo/resources/tesseract
 
 # Config file
 config.json
+
+# Logs
+flanatrigo/logs/*
+!flanatrigo/logs/images
+flanatrigo/logs/images/*

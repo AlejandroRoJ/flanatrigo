@@ -35,6 +35,8 @@ class Config:
     afk_press_button: str = constants.AFK_PRESS_BUTTON
 
     volume: int = constants.VOLUME
+    logs_state: bool = constants.LOGS_STATE
+    logs_mark_button: str = constants.LOGS_MARK_BUTTON
 
     def load(self):
         try:

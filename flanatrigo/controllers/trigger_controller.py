@@ -1,3 +1,5 @@
+import datetime
+import logging
 import multiprocessing
 import pathlib
 import subprocess
@@ -6,6 +8,7 @@ from typing import Any
 
 import keyboard
 import mouse
+from PIL import Image, ImageDraw, ImageFont, ImageGrab
 from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
 
 import constants
@@ -49,6 +52,56 @@ class TriggerController(Controller):
             subprocess.run((constants.FFMPEG_PATH, '-i', str(sound_path), str(sound_path.with_suffix('.wav'))))
             self._load_audio(name)
 
+    def _log(self):
+        if not self.config.logs_state:
+            return
+
+        formatted_date = datetime.datetime.now().strftime('%m-%d-%Y_%H-%M-%S')
+        tick_image = Image.open(f'{constants.IMAGES_PATH}/tick.png')
+        cross_image = Image.open(f'{constants.IMAGES_PATH}/cross.png')
+        image = ImageGrab.grab()
+        draw = ImageDraw.Draw(image)
+        font = ImageFont.truetype('arial', 80)
+        text_position = (120, 500)
+        text_color = (255, 255, 255)
+        text_border_color = (0, 0, 0)
+        text_border_width = 3
+
+        draw.text(
+            text_position,
+            'trigger',
+            fill=text_color,
+            font=font,
+            stroke_width=text_border_width,
+            stroke_fill=text_border_color
+        )
+        text_position = text_position[0] + 270, text_position[1] + 20
+        if self.is_trigger_activated:
+            image.paste(tick_image, text_position, tick_image)
+        else:
+            image.paste(cross_image, text_position, cross_image)
+
+        text_position = text_position[0] - 270, text_position[1] + 100
+        draw.text(
+            text_position,
+            'rage',
+            fill=text_color,
+            font=font,
+            stroke_width=text_border_width,
+            stroke_fill=text_border_color
+        )
+        text_position = text_position[0] + 270, text_position[1] + 20
+        if self.is_rage_activated:
+            image.paste(tick_image, text_position, tick_image)
+        else:
+            image.paste(cross_image, text_position, cross_image)
+
+        image.save(f'{constants.LOGS_IMAGES_PATH}/{formatted_date}.jpg', optimize=True, quality=25)
+        logging.getLogger(constants.LOGGER_NAME).debug(
+            f"\n"
+            f"![{formatted_date}]({f'images/{formatted_date}.jpg'})"
+        )
+
     def _on_device_event(self, event: keyboard.KeyboardEvent | mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent):
         if not self.gui.check_trigger.isChecked():
             return
@@ -74,21 +127,25 @@ class TriggerController(Controller):
         if not self.is_rage_activated:
             self.cs_queue.put(('rage_mode', True))
             self.is_rage_activated = True
+            self._log()
 
     def _send_start_trigger(self):
         if not self.is_trigger_activated:
             self.cs_queue.put(('trigger', True))
             self.is_trigger_activated = True
+            self._log()
 
     def _send_stop_rage(self):
         if self.is_rage_activated:
             self.cs_queue.put(('rage_mode', False))
             self.is_rage_activated = False
+            self._log()
 
     def _send_stop_trigger(self):
         if self.is_trigger_activated:
             self.cs_queue.put(('trigger', False))
             self.is_trigger_activated = False
+            self._log()
 
     def _start_rage_timer(self):
         self.rage_timer = threading.Timer(self.config.rage_immobility, self._start_rage_trigger)

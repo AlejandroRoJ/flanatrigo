@@ -29,6 +29,18 @@ AFK_ACTIVATION_BUTTON = 'f10'
 AFK_PRESS_BUTTON = 'tab'
 AFK_INTERVAL = 0.2
 
+# Others defaults
+VOLUME = 50
+LOGS_STATE = False
+LOGS_MARK_BUTTON = 'f8'
+VERSION = 'v1.2.0'
+
+# Logs defaults
+LOGS_PATH = 'logs'
+LOGS_IMAGES_PATH = f'{LOGS_PATH}/images'
+LOG_FILE_STEM = 'log'
+LOG_FILE_EXTENSION = 'md'
+
 # Resources
 RESOURCES_PATH = 'resources'
 DLLS_PATH = f'{RESOURCES_PATH}/dlls'
@@ -49,7 +61,7 @@ PIN_PATH = f'{IMAGES_PATH}/pin.png'
 PYTESSERACT_PATH = f'{RESOURCES_PATH}/tesseract/tesseract.exe'
 UI_PATH = f'{RESOURCES_PATH}/central_widget.ui'
 
-# Others
+# App
 AGENTS_REGION_FACTORS = (0.2, 0.8, 0.74, 1)
 CLICK_DELAY = 0.02
 CONFIRM_PIEZE_COLOR = (104, 164, 167)
@@ -60,6 +72,9 @@ CROSSHAIR_PEN_WIDTH = 2
 CROSSHAIR_WINDOW_DURATION = 3
 CS_TEST_MODE = 0
 DOUBLE_BUTTON_WAITING_SECONDS = 0.3
+LOG_FILE_SIZE = 30_000
+LOGS_FILES = 3
+LOGGER_NAME = 'trigger'
 PICKER_AGENT_CONFIDENCE = 0.9
 PICKER_IN_GAME_SLEEP_SECONDS = 10
 PICKER_MENU_WORDS = ('jugar', 'notas', 'trayectoria', 'colección', 'agentes', 'tienda', 'grupo', 'práctica')
@@ -75,5 +90,3 @@ SPANISH_KEYS_TRANSLATION = (
 )
 TAB = 0
 TITLE_BAR_HEIGHT = 35
-VERSION = 'v1.2.0'
-VOLUME = 50

@@ -32,6 +32,7 @@ class CentralWidget(QtWidgets.QWidget):
     label_afk_press_button: QtWidgets.QLabel
     label_afk_interval: QtWidgets.QLabel
     label_volume: QtWidgets.QLabel
+    label_logs_mark: QtWidgets.QLabel
     label_version: QtWidgets.QLabel
 
     line_hexadecimal: QtWidgets.QLineEdit
@@ -40,9 +41,11 @@ class CentralWidget(QtWidgets.QWidget):
     line_picker_activation_button: HotkeyLineEdit
     line_afk_activation_button: HotkeyLineEdit
     line_afk_press_button: HotkeyLineEdit
+    line_logs_mark_button: HotkeyLineEdit
 
     button_color: QtWidgets.QPushButton
     button_restore_config: QtWidgets.QPushButton
+    button_clear_logs: QtWidgets.QPushButton
 
     check_detector: QtWidgets.QCheckBox
 
@@ -78,8 +81,11 @@ class CentralWidget(QtWidgets.QWidget):
     tab_trigger: QtWidgets.QWidget
     tab_picker: QtWidgets.QWidget
     tab_afk: QtWidgets.QWidget
+    tab_others: QtWidgets.QWidget
 
     list_agents: DeselectableListWidget
+
+    group_logs: QtWidgets.QGroupBox
 
     scroll: QtWidgets.QScrollArea
 
@@ -106,14 +112,18 @@ class CentralWidget(QtWidgets.QWidget):
         self.tab_picker.layout().itemAt(0).insertWidget(0, self.check_picker)
         self.check_afk = Switch(self.tab_picker, track_radius=8, thumb_radius=10, os_colors=False)
         self.tab_afk.layout().insertWidget(0, self.check_afk)
+        self.check_logs = Switch(self.tab_others, track_radius=7, thumb_radius=9, os_colors=False)
+        self.group_logs.layout().insertWidget(0, self.check_logs)
+        self.group_logs.layout().setStretch(1, 1)
 
         palette = self.scroll.palette()
         palette.setBrush(QtGui.QPalette.ColorRole.Window, QtGui.QBrush(QtCore.Qt.NoBrush))
         self.scroll.setPalette(palette)
-        self.check_detector.setStyle(QtWidgets.QStyleFactory.create('windowsvista'))
-        for slider in vars(self).values():
-            if isinstance(slider, AgileSlider):
-                slider.set_os_colors(False)
+        for item in vars(self).values():
+            if isinstance(item, QtWidgets.QCheckBox):
+                item.setStyle(QtWidgets.QStyleFactory.create('windowsvista'))
+            elif isinstance(item, AgileSlider):
+                item.set_os_colors(False)
         palette = self.slider_detector_horizontal.palette()
         if palette.text().color().red() < 128:
             palette.setColor(QtGui.QPalette.ColorRole.Highlight, QtGui.QColor.fromRgb(200, 200, 200))
@@ -138,14 +148,18 @@ class CentralWidget(QtWidgets.QWidget):
         self.line_afk_activation_button.add_handlers(self.afk_controller.on_activation_press, double_press_handler=self.afk_controller.on_activation_press)
         self.line_afk_activation_button.textChanged.connect(lambda: self.afk_controller.on_line_buttons_change(self.line_afk_activation_button))
         self.line_afk_press_button.textChanged.connect(lambda: self.afk_controller.on_line_buttons_change(self.line_afk_press_button))
+        self.line_logs_mark_button.add_handlers(self.others_controller.on_logs_activation_press, double_press_handler=self.others_controller.on_logs_activation_press)
+        self.line_logs_mark_button.textChanged.connect(lambda: self.others_controller.on_line_buttons_change(self.line_logs_mark_button))
 
         self.button_color.clicked.connect(self.trigger_controller.open_color_dialog)
         self.button_restore_config.clicked.connect(self.others_controller.restore_config)
+        self.button_clear_logs.clicked.connect(self.others_controller.on_clear_logs)
 
         self.check_trigger.clicked.connect(self.trigger_controller.on_check_trigger_change)
         self.check_detector.stateChanged.connect(self.trigger_controller.on_check_detector_change)
         self.check_picker.clicked.connect(self.picker_controller.on_check_picker_change)
         self.check_afk.clicked.connect(self.afk_controller.on_check_afk_change)
+        self.check_logs.clicked.connect(self.others_controller.on_check_logs_change)
 
         self.slider_detector_size.valueChanged.connect(lambda: self._slider_to_spin(self.slider_detector_size, self.spin_detector_size))
         self.slider_detector_horizontal.valueChanged.connect(lambda: self._slider_to_spin(self.slider_detector_horizontal, self.spin_detector_horizontal))

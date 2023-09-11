@@ -1783,7 +1783,10 @@
       <attribute name="title">
        <string>Otros</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_30">
+      <layout class="QVBoxLayout" name="verticalLayout_30" stretch="0,0,1,0">
+       <property name="spacing">
+        <number>18</number>
+       </property>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_29">
          <item>
@@ -1854,6 +1857,76 @@
           </layout>
          </item>
         </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="group_logs">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>Registro de depuración</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_24">
+          <property name="spacing">
+           <number>12</number>
+          </property>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_34">
+            <property name="spacing">
+             <number>2</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_logs_mark">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Crear marca</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="HotkeyLineEdit" name="line_logs_mark_button">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="contextMenuPolicy">
+               <enum>Qt::PreventContextMenu</enum>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_clear_logs">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>  Borrar datos  </string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer_8">
