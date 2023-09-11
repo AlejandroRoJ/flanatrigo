@@ -114,7 +114,11 @@ class CentralWidget(QtWidgets.QWidget):
         self.tab_afk.layout().insertWidget(0, self.check_afk)
         self.check_logs = Switch(self.tab_others, track_radius=7, thumb_radius=9, os_colors=False)
         self.group_logs.layout().insertWidget(0, self.check_logs)
-        self.group_logs.layout().setStretch(1, 1)
+        self.line_logs = QtWidgets.QFrame()
+        self.line_logs.setFrameShape(QtWidgets.QFrame.VLine)
+        self.line_logs.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.group_logs.layout().insertWidget(1, self.line_logs)
+        self.group_logs.layout().setStretch(2, 1)
 
         palette = self.scroll.palette()
         palette.setBrush(QtGui.QPalette.ColorRole.Window, QtGui.QBrush(QtCore.Qt.NoBrush))

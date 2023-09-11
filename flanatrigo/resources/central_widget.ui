@@ -1789,6 +1789,9 @@
        </property>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_29">
+         <property name="spacing">
+          <number>2</number>
+         </property>
          <item>
           <widget class="QLabel" name="label_volume">
            <property name="sizePolicy">
@@ -1891,7 +1894,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Crear marca</string>
+               <string>Añadir marca</string>
               </property>
              </widget>
             </item>
