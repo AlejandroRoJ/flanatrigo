@@ -1,10 +1,12 @@
 import logging.handlers
+import pathlib
 
 import constants
 from models.logging_handlers import ImageRotatingFileHandler
 
 
 def init():
+    pathlib.Path(constants.LOGS_IMAGES_PATH).mkdir(parents=True, exist_ok=True)
     handler = ImageRotatingFileHandler(
         f'{constants.LOGS_PATH}/{constants.LOG_FILE_STEM}.{constants.LOG_FILE_EXTENSION}',
         maxBytes=constants.LOG_FILE_SIZE,
