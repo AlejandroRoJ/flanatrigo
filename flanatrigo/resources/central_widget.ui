@@ -1924,7 +1924,7 @@
           <item>
            <widget class="QCheckBox" name="check_beeps">
             <property name="text">
-             <string>Sustituir disparo por sonido</string>
+             <string>Reproducir pitido al detectar</string>
             </property>
            </widget>
           </item>
