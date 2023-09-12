@@ -43,6 +43,8 @@ class CentralWidget(QtWidgets.QWidget):
     line_afk_press_button: HotkeyLineEdit
     line_logs_mark_button: HotkeyLineEdit
 
+    combo_trigger_backend: QtWidgets.QComboBox
+
     button_color: QtWidgets.QPushButton
     button_restore_config: QtWidgets.QPushButton
     button_clear_logs: QtWidgets.QPushButton
@@ -155,6 +157,8 @@ class CentralWidget(QtWidgets.QWidget):
         self.line_logs_mark_button.add_handlers(self.others_controller.on_logs_activation_press, double_press_handler=self.others_controller.on_logs_activation_press)
         self.line_logs_mark_button.textChanged.connect(lambda: self.others_controller.on_line_buttons_change(self.line_logs_mark_button))
 
+        self.combo_trigger_backend.currentIndexChanged.connect(self.trigger_controller.on_combo_trigger_backend_change)
+
         self.button_color.clicked.connect(self.trigger_controller.open_color_dialog)
         self.button_restore_config.clicked.connect(self.others_controller.restore_config)
         self.button_clear_logs.clicked.connect(self.others_controller.on_clear_logs)
@@ -205,5 +209,5 @@ class CentralWidget(QtWidgets.QWidget):
         spin.setValue(slider.value() / 100 if isinstance(spin, NoWheelDoubleSpinBox) else slider.value())
 
     def close(self) -> bool:
-        self.trigger_controller.close_crosshair_window(force=True)
+        self.trigger_controller.close()
         return super().close()

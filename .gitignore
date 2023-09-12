@@ -163,6 +163,7 @@ flanatrigo/resources/dlls/System.Drawing.Common.dll
 flanatrigo/resources/ffmpeg
 flanatrigo/resources/images/agents
 flanatrigo/resources/tesseract
+flanatrigo/resources/autohotkey
 
 # GIMP
 *.xcf

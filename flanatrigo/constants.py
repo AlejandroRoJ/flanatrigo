@@ -2,6 +2,7 @@ import pathlib
 
 # Trigger defaults
 TRIGGER_STATE = False
+TRIGGER_BACKEND = 0
 TRIGGER_ACTIVATION_BUTTON = 'mouse_x2'
 TRIGGER_MODE_BUTTON = 'alt gr'
 DETECTOR_ALWAYS_VISIBLE = False
@@ -46,6 +47,11 @@ RESOURCES_PATH = 'resources'
 DLLS_PATH = f'{RESOURCES_PATH}/dlls'
 IMAGES_PATH = f'{RESOURCES_PATH}/images'
 SOUNDS_PATH = f'{RESOURCES_PATH}/sounds'
+AUTOHOTKEY_PATH = f'{RESOURCES_PATH}/autohotkey'
+AUTOHOTKEY_EXE_PATH = f'{AUTOHOTKEY_PATH}/AutoHotkey64.exe'
+AUTOHOTKEY_PAUSE_NAME = 'pause.ahk'
+AUTOHOTKEY_RESUME_NAME = 'resume.ahk'
+AUTOHOTKEY_SCRIPT_NAME = 'script.ahk'
 ACTIVATED_SOUND_NAME = 'activated'
 AGENTS_PICKER_PATH = f'{IMAGES_PATH}/agents/picker/{{}}.png'
 AGENTS_FULL_PATH = pathlib.Path(f'{IMAGES_PATH}/agents/full')

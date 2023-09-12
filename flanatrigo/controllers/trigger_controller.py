@@ -1,10 +1,8 @@
 import datetime
 import logging
-import multiprocessing
 import pathlib
 import subprocess
 import threading
-from typing import Any
 
 import keyboard
 import mouse
@@ -13,15 +11,15 @@ from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
 
 import constants
 from controllers.controller import Controller
-from models.config import Config
+from models.autohotkey_interface import AutoHotkeyInterface
+from models.queueable import Queueable
 from my_qt.spin_boxes import NoWheelDoubleSpinBox, NoWheelSpinBox
 from my_qt.windows import CrosshairWindow
 
 
-class TriggerController(Controller):
-    def __init__(self, cs_queue: multiprocessing.Queue, config: Config, *args, **kwargs):
-        super().__init__(config, *args, **kwargs)
-        self.cs_queue = cs_queue
+class TriggerController(Queueable, Controller):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.can_open_crosshair_window = True
         self.is_trigger_activated = False
         self.is_rage_activated = False
@@ -39,7 +37,16 @@ class TriggerController(Controller):
         self.rage_keyboard_hook = None
         self.rage_mouse_hook = None
 
-        self.timer_crosshair_window.timeout.connect(self.close_crosshair_window)
+        self.timer_crosshair_window.timeout.connect(self._close_crosshair_window)
+
+    def _close_crosshair_window(self, force=False):
+        if self.crosshair_window and (force or not self.gui.check_detector.isChecked()):
+            self.crosshair_window.close()
+            self.crosshair_window = None
+
+    def _close_crosshair_window_after(self, after: int = 0):
+        if self.crosshair_window:
+            self.timer_crosshair_window.start(after)
 
     def _load_audio(self, name: str):
         sound_path = pathlib.Path(f'{constants.SOUNDS_PATH}/{name}.wav')
@@ -120,9 +127,6 @@ class TriggerController(Controller):
             self._stop_trigger_timer()
             self._start_trigger_timer()
 
-    def _send_trigger_attribute(self, name: str, value: Any):
-        self.cs_queue.put((name, value))
-
     def _send_start_rage(self):
         if not self.is_rage_activated:
             self.cs_queue.put(('rage_mode', True))
@@ -131,7 +135,13 @@ class TriggerController(Controller):
 
     def _send_start_trigger(self):
         if not self.is_trigger_activated:
-            self.cs_queue.put(('trigger', True))
+            match self.config.trigger_backend:
+                case 0:
+                    self.cs_queue.put(('trigger', True))
+                case 1:
+                    AutoHotkeyInterface.start()
+                case _:
+                    return
             self.is_trigger_activated = True
             self._log()
 
@@ -143,7 +153,13 @@ class TriggerController(Controller):
 
     def _send_stop_trigger(self):
         if self.is_trigger_activated:
-            self.cs_queue.put(('trigger', False))
+            match self.config.trigger_backend:
+                case 0:
+                    self.cs_queue.put(('trigger', False))
+                case 1:
+                    AutoHotkeyInterface.stop()
+                case _:
+                    return
             self.is_trigger_activated = False
             self._log()
 
@@ -219,14 +235,10 @@ class TriggerController(Controller):
             palette.setColor(palette.ColorRole.Button, self.default_color)
         self.gui.setPalette(palette)
 
-    def close_crosshair_window(self, force=False):
-        if self.crosshair_window and (force or not self.gui.check_detector.isChecked()):
-            self.crosshair_window.close()
-            self.crosshair_window = None
-
-    def close_crosshair_window_after(self, after: int = 0):
-        if self.crosshair_window:
-            self.timer_crosshair_window.start(after)
+    def close(self):
+        self._stop_trigger()
+        AutoHotkeyInterface.close()
+        self._close_crosshair_window(force=True)
 
     def load_audio(self):
         self._load_audio(constants.ACTIVATED_SOUND_NAME)
@@ -235,10 +247,21 @@ class TriggerController(Controller):
     def load_config(self):
         self.config.load()
 
-        screen_size = QtWidgets.QApplication.screens()[0].size()
-        self.cs_queue.put(('screen_size', (screen_size.width(), screen_size.height())))
+        screen_size = QtWidgets.QApplication.primaryScreen().size()
+        self._send_trigger_attribute('screen_size', (screen_size.width(), screen_size.height()))
+        AutoHotkeyInterface.screen_size = (screen_size.width(), screen_size.height())
+        AutoHotkeyInterface.detector_size = self.config.detector_size
+        AutoHotkeyInterface.detector_horizontal = self.config.detector_horizontal
+        AutoHotkeyInterface.detector_vertical = self.config.detector_vertical
+        AutoHotkeyInterface.color = self.config.color
+        AutoHotkeyInterface.tolerance = self.config.tolerance
+        AutoHotkeyInterface.cadence = self.config.cadence
+        AutoHotkeyInterface.test_mode = self.config.beeps_state
+        AutoHotkeyInterface.update_region()
+        AutoHotkeyInterface.init_files()
         self.load_audio()
         self.gui.check_trigger.setChecked(constants.TRIGGER_STATE)
+        self.gui.combo_trigger_backend.setCurrentIndex(self.config.trigger_backend)
         self.activation_locked = constants.TRIGGER_STATE
         self.gui.line_trigger_activation_button.add_selected_buttons(self.config.trigger_activation_button)
         self.gui.line_trigger_mode_button.add_selected_buttons(self.config.trigger_mode_button)
@@ -264,8 +287,8 @@ class TriggerController(Controller):
         self.set_color(*self.config.color)
         self.gui.spin_tolerance.setValue(self.config.tolerance)
         self._set_slider_spin_value(self.gui.spin_cadence, self.gui.slider_cadence, self.config.cadence)
-        self._update_hooks()
         self._update_rage_theme()
+        self._update_hooks()
         self._set_slider_spin_value(
             self.gui.spin_rage_immobility,
             self.gui.slider_rage_immobility,
@@ -290,6 +313,9 @@ class TriggerController(Controller):
         self.gui.check_trigger.setChecked(False)
 
     def on_change_mode_press(self):
+        if self.config.trigger_backend:
+            return
+
         self.config.rage_mode = not self.config.rage_mode
         self.save_config()
 
@@ -300,12 +326,13 @@ class TriggerController(Controller):
         self._update_rage_theme()
         self._update_hooks()
 
-    def on_check_detector_change(self, state: bool):
-        if state:
+    def on_check_detector_change(self, state: int):
+        detector_always_visible = bool(state)
+        if detector_always_visible:
             self.open_crosshair_window()
         elif not self.timer_crosshair_window.isActive():
-            self.close_crosshair_window()
-        self.config.detector_always_visible = state
+            self._close_crosshair_window()
+        self.config.detector_always_visible = detector_always_visible
         self.save_config()
 
     def on_check_trigger_change(self, state: bool):
@@ -319,6 +346,16 @@ class TriggerController(Controller):
             self.activated_player.play()
         elif not state and self.deactivated_player:
             self.deactivated_player.play()
+
+    def on_combo_trigger_backend_change(self, index: int):
+        if self.gui.check_trigger.isChecked():
+            self.gui.check_trigger.click()
+        self.config.trigger_backend = index
+        self.config.rage_mode = False
+        self.save_config()
+        AutoHotkeyInterface.close()
+        self._update_rage_theme()
+        self._update_hooks()
 
     def on_double_press_activation(self):
         self.gui.check_trigger.click()
@@ -346,6 +383,12 @@ class TriggerController(Controller):
     ) -> str:
         attribute_name = super().on_spin_change(spin, slider)
         self._send_trigger_attribute(attribute_name, spin.value())
+        setattr(AutoHotkeyInterface, attribute_name, spin.value())
+        AutoHotkeyInterface.update_region()
+        if self.config.trigger_backend == 1:
+            AutoHotkeyInterface.restart()
+            if self.gui.check_trigger.isChecked():
+                AutoHotkeyInterface.start()
 
         if attribute_name == 'cadence':
             self._update_hooks()
@@ -394,7 +437,7 @@ class TriggerController(Controller):
         else:
             self.crosshair_window = CrosshairWindow(color, size, horizontal_offset, vertical_offset, screen)
 
-        self.close_crosshair_window_after(after=constants.CROSSHAIR_WINDOW_DURATION * 1000)
+        self._close_crosshair_window_after(after=constants.CROSSHAIR_WINDOW_DURATION * 1000)
 
     def set_color(self, red: int = None, green: int = None, blue: int = None):
         if red is None:
@@ -415,3 +458,8 @@ class TriggerController(Controller):
         self.config.color = (red, green, blue)
         self.save_config()
         self._send_trigger_attribute('color', self.config.color)
+        AutoHotkeyInterface.color = self.config.color
+        if self.config.trigger_backend == 1:
+            AutoHotkeyInterface.restart()
+            if self.gui.check_trigger.isChecked():
+                AutoHotkeyInterface.start()

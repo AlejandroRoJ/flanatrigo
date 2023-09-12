@@ -21,7 +21,7 @@ class MyQtApp(Salvable, QtWidgets.QApplication, metaclass=MixinMeta):
         self.trigger_controller = TriggerController(cs_queue, config, self.main_window.central_widget)
         self.picker_controller = PickerController(config, self.main_window.central_widget)
         self.afk_controller = AFKController(config, self.main_window.central_widget)
-        self.others_controller = OthersController(config, self.main_window.central_widget)
+        self.others_controller = OthersController(cs_queue, config, self.main_window.central_widget)
 
         self.connect_signals(
             self.trigger_controller,
