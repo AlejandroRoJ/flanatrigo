@@ -20,10 +20,10 @@ from my_qt.windows import CrosshairWindow
 class TriggerController(Queueable, Controller):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.crosshair_window: CrosshairWindow | None = None
         self.can_open_crosshair_window = True
         self.is_trigger_activated = False
         self.is_rage_activated = False
-        self.crosshair_window: CrosshairWindow | None = None
         self.activation_locked = False
         self.activated_player = None
         self.deactivated_player = None
