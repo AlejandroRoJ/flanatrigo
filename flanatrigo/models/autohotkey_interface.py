@@ -1,6 +1,7 @@
 import inspect
 import pathlib
 import subprocess
+import time
 
 import keyboard
 
@@ -42,6 +43,8 @@ class AutoHotkeyInterface:
     def start(cls):
         if not cls._process:
             cls.restart()
+            while b'AutoHotkey64.exe' not in subprocess.run('tasklist', capture_output=True).stdout:
+                time.sleep(0)
 
         if cls._is_paused:
             cls._is_paused = False
