@@ -36,6 +36,7 @@ class Config:
     afk_interval: float = constants.AFK_INTERVAL
 
     volume: int = constants.VOLUME
+    beeps_state: bool = constants.BEEPS_STATE
     logs_state: bool = constants.LOGS_STATE
     logs_mark_button: str = constants.LOGS_MARK_BUTTON
 

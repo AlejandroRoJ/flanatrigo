@@ -26,7 +26,6 @@ def main(python_queue: multiprocessing.Queue):
         CSTrigger.detectorX = (screen_size[0] - detector_size) // 2 + horizontal_offset
         CSTrigger.detectorY = (screen_size[1] - detector_size) // 2 + vertical_offset
 
-    rage_mode = constants.RAGE_MODE
     screen_size = constants.SCREEN_SIZE
     detector_size = constants.DETECTOR_SIZE
     horizontal_offset = constants.DETECTOR_HORIZONTAL
@@ -35,8 +34,8 @@ def main(python_queue: multiprocessing.Queue):
     tolerance = constants.TOLERANCE
 
     CSTrigger.clickDelay = int(constants.CLICK_DELAY * 100)
-    CSTrigger.testMode = constants.CS_TEST_MODE
-    CSTrigger.rageMode = rage_mode
+    CSTrigger.rageMode = constants.RAGE_MODE
+    CSTrigger.testMode = constants.TEST_MODE
     update_size()
     update_color()
 
@@ -62,3 +61,5 @@ def main(python_queue: multiprocessing.Queue):
                 update_color()
             case 'rage_tolerance', rage_tolerance:
                 CSTrigger.rageTolerance = rage_tolerance
+            case 'test_mode', test_mode:
+                CSTrigger.testMode = test_mode

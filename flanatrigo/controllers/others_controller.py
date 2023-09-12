@@ -6,13 +6,16 @@ from PySide6 import QtWidgets
 
 import constants
 from controllers.controller import Controller
+from models.autohotkey_interface import AutoHotkeyInterface
+from models.queueable import Queueable
 
 
-class OthersController(Controller):
+class OthersController(Queueable, Controller):
     def load_config(self):
         self.config.load()
 
         self.gui.spin_volume.setValue(self.config.volume)
+        self.gui.check_beeps.setChecked(self.config.beeps_state)
         self.gui.check_logs.setChecked(self.config.logs_state)
         self.gui.line_logs_mark_button.add_selected_buttons(self.config.logs_mark_button)
         self.gui.label_version.setText(constants.VERSION)
@@ -49,6 +52,16 @@ class OthersController(Controller):
     def on_logs_activation_press(self):
         if self.config.logs_state:
             logging.getLogger(constants.LOGGER_NAME).debug(' 🔴🔴🔴 Marca 🔴🔴🔴')
+
+    def on_check_beeps_change(self, state: int):
+        test_mode = int(bool(state))
+        self.config.beeps_state = test_mode
+        self.save_config()
+        self._send_trigger_attribute('test_mode', test_mode)
+        AutoHotkeyInterface.test_mode = test_mode
+        AutoHotkeyInterface.restart()
+        if self.gui.check_trigger.isChecked():
+            AutoHotkeyInterface.start()
 
     def on_check_logs_change(self, state: bool):
         self.config.logs_state = state

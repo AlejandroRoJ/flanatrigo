@@ -49,13 +49,59 @@
         <number>0</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" name="layout_trigger_top">
-         <property name="leftMargin">
-          <number>11</number>
-         </property>
-         <property name="topMargin">
-          <number>11</number>
-         </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_25">
+         <item>
+          <layout class="QVBoxLayout" name="layout_trigger_top">
+           <property name="leftMargin">
+            <number>11</number>
+           </property>
+           <property name="topMargin">
+            <number>11</number>
+           </property>
+          </layout>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_35">
+           <property name="topMargin">
+            <number>11</number>
+           </property>
+           <property name="rightMargin">
+            <number>11</number>
+           </property>
+           <item>
+            <widget class="QComboBox" name="combo_trigger_backend">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <item>
+              <property name="text">
+               <string>C#</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>AutoHotkey</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
         </layout>
        </item>
        <item>
@@ -1862,70 +1908,94 @@
         </layout>
        </item>
        <item>
-        <widget class="QGroupBox" name="group_logs">
+        <widget class="QGroupBox" name="groupBox_7">
          <property name="font">
           <font>
            <pointsize>12</pointsize>
           </font>
          </property>
          <property name="title">
-          <string>Registro de depuración</string>
+          <string>Depuración</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_24">
+         <layout class="QVBoxLayout" name="verticalLayout_36">
           <property name="spacing">
            <number>12</number>
           </property>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_34">
-            <property name="spacing">
-             <number>2</number>
+           <widget class="QCheckBox" name="check_beeps">
+            <property name="text">
+             <string>Sustituir disparo por sonido</string>
             </property>
-            <item>
-             <widget class="QLabel" name="label_logs_mark">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>Añadir marca</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="HotkeyLineEdit" name="line_logs_mark_button">
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
-              <property name="contextMenuPolicy">
-               <enum>Qt::PreventContextMenu</enum>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="button_clear_logs">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+           <widget class="QGroupBox" name="group_logs">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+             </font>
             </property>
-            <property name="text">
-             <string>  Borrar datos  </string>
+            <property name="title">
+             <string>Registro</string>
             </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_24">
+             <property name="spacing">
+              <number>12</number>
+             </property>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_34">
+               <property name="spacing">
+                <number>2</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="label_logs_mark">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Añadir marca</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="HotkeyLineEdit" name="line_logs_mark_button">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="contextMenuPolicy">
+                  <enum>Qt::PreventContextMenu</enum>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="button_clear_logs">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>  Borrar datos  </string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
