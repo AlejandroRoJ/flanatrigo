@@ -23,7 +23,6 @@ class AutoHotkeyInterface:
 
     @classmethod
     def init_files(cls):
-        pathlib.Path(constants.AUTOHOTKEY_PATH).mkdir(exist_ok=True)
         pathlib.Path(f'{constants.AUTOHOTKEY_PATH}/{constants.AUTOHOTKEY_PAUSE_NAME}').write_text(
             inspect.cleandoc(f'''
                 DetectHiddenWindows(True)
