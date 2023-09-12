@@ -2,6 +2,8 @@ import inspect
 import pathlib
 import subprocess
 
+import keyboard
+
 import constants
 
 
@@ -20,24 +22,6 @@ class AutoHotkeyInterface:
     tolerance: int = constants.TOLERANCE
     cadence: float = constants.CADENCE
     test_mode: int = constants.TEST_MODE
-
-    @classmethod
-    def init_files(cls):
-        pathlib.Path(f'{constants.AUTOHOTKEY_PATH}/{constants.AUTOHOTKEY_PAUSE_NAME}').write_text(
-            inspect.cleandoc(f'''
-                DetectHiddenWindows(True)
-                PostMessage(0x5555, True, 0, , "{constants.AUTOHOTKEY_SCRIPT_NAME}")
-                DetectHiddenWindows(False)
-            ''')
-        )
-        pathlib.Path(f'{constants.AUTOHOTKEY_PATH}/{constants.AUTOHOTKEY_RESUME_NAME}').write_text(
-            inspect.cleandoc(f'''
-                DetectHiddenWindows(True)
-                PostMessage(0x5555, False, 0, , "{constants.AUTOHOTKEY_SCRIPT_NAME}")
-                DetectHiddenWindows(False)
-            ''')
-        )
-        cls.update_region()
 
     @classmethod
     def close(cls):
@@ -60,20 +44,14 @@ class AutoHotkeyInterface:
             cls.restart()
 
         if cls._is_paused:
-            subprocess.Popen(
-                f'{constants.AUTOHOTKEY_EXE_PATH} {constants.AUTOHOTKEY_PATH}/{constants.AUTOHOTKEY_RESUME_NAME}'
-            )
             cls._is_paused = False
+            keyboard.press_and_release(-22)
 
     @classmethod
     def stop(cls):
-        if cls._is_paused:
-            return
-
-        cls._is_paused = True
-        subprocess.Popen(
-            f'{constants.AUTOHOTKEY_EXE_PATH} {constants.AUTOHOTKEY_PATH}/{constants.AUTOHOTKEY_PAUSE_NAME}'
-        )
+        if not cls._is_paused:
+            cls._is_paused = True
+            keyboard.press_and_release(-23)
 
     @classmethod
     def update_region(cls):
@@ -96,17 +74,18 @@ class AutoHotkeyInterface:
         code = f'''
             CoordMode("Pixel", "Screen")
             mustPause := True
-            OnMessage(0x5555, _OnMessage)
-            _OnMessage(wParam, *) {{
+            VK216::{{
                 global mustPause
-                mustPause := wParam
-                if not wParam {{
-                    Pause False
-                }}                
+                mustPause := False
+                Pause(False)
+            }}
+            VK217::{{
+                global mustPause
+                mustPause := True
             }}
             Loop {{
                 if mustPause {{
-                    Pause
+                    Pause()
                 }}
                 if PixelSearch(&pixelX, &pixelY, {cls._x1}, {cls._y1}, {cls._x2}, {cls._y2}, {hex((cls.color[0] << 16) + (cls.color[1] << 8) + cls.color[2])}, {cls.tolerance}) {{
                     {action_code}

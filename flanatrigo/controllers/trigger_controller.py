@@ -258,7 +258,6 @@ class TriggerController(Queueable, Controller):
         AutoHotkeyInterface.cadence = self.config.cadence
         AutoHotkeyInterface.test_mode = self.config.beeps_state
         AutoHotkeyInterface.update_region()
-        AutoHotkeyInterface.init_files()
         self.load_audio()
         self.gui.check_trigger.setChecked(constants.TRIGGER_STATE)
         self.gui.combo_trigger_backend.setCurrentIndex(self.config.trigger_backend)
