@@ -36,14 +36,19 @@ class AutoHotkeyInterface:
         cls.close()
         cls.write_script()
         cls._process = subprocess.Popen(
-            f'{constants.AUTOHOTKEY_EXE_PATH} {constants.AUTOHOTKEY_PATH}/{constants.AUTOHOTKEY_SCRIPT_NAME}'
+            f'{constants.AUTOHOTKEY_EXE_PATH} {constants.AUTOHOTKEY_PATH}/{constants.AUTOHOTKEY_SCRIPT_NAME}',
+            creationflags=subprocess.CREATE_NO_WINDOW
         )
 
     @classmethod
     def start(cls):
         if not cls._process:
             cls.restart()
-            while b'AutoHotkey64.exe' not in subprocess.run('tasklist', capture_output=True).stdout:
+            while b'AutoHotkey64.exe' not in subprocess.run(
+                'tasklist',
+                capture_output=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            ).stdout:
                 time.sleep(0)
 
         if cls._is_paused:
