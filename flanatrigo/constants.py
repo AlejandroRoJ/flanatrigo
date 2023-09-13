@@ -35,7 +35,7 @@ VOLUME = 50
 BEEPS_STATE = False
 LOGS_STATE = False
 LOGS_MARK_BUTTON = 'f8'
-VERSION = 'v1.2.0'
+VERSION = 'v1.2.1'
 
 # Logs defaults
 LOGS_PATH = 'logs'
