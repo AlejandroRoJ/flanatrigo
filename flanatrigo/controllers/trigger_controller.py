@@ -104,10 +104,7 @@ class TriggerController(Queueable, Controller):
             image.paste(cross_image, text_position, cross_image)
 
         image.save(f'{constants.LOGS_IMAGES_PATH}/{formatted_date}.jpg', optimize=True, quality=25)
-        logging.getLogger(constants.LOGGER_NAME).debug(
-            f"\n"
-            f"![{formatted_date}]({f'images/{formatted_date}.jpg'})"
-        )
+        logging.getLogger(constants.LOGGER_NAME).debug(f"\n![{formatted_date}]({f'images/{formatted_date}.jpg'})")
 
     def _on_device_event(self, event: keyboard.KeyboardEvent | mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent):
         if not self.gui.check_trigger.isChecked():
@@ -128,40 +125,48 @@ class TriggerController(Queueable, Controller):
             self._start_trigger_timer()
 
     def _send_start_rage(self):
-        if not self.is_rage_activated:
-            self.cs_queue.put(('rage_mode', True))
-            self.is_rage_activated = True
-            self._log()
+        if self.is_rage_activated:
+            return
+
+        self.cs_queue.put(('rage_mode', True))
+        self.is_rage_activated = True
+        self._log()
 
     def _send_start_trigger(self):
-        if not self.is_trigger_activated:
-            match self.config.trigger_backend:
-                case 0:
-                    self.cs_queue.put(('trigger', True))
-                case 1:
-                    AutoHotkeyInterface.start()
-                case _:
-                    return
-            self.is_trigger_activated = True
-            self._log()
+        if self.is_trigger_activated:
+            return
+
+        match self.config.trigger_backend:
+            case 0:
+                self.cs_queue.put(('trigger', True))
+            case 1:
+                AutoHotkeyInterface.start()
+            case _:
+                return
+        self.is_trigger_activated = True
+        self._log()
 
     def _send_stop_rage(self):
-        if self.is_rage_activated:
-            self.cs_queue.put(('rage_mode', False))
-            self.is_rage_activated = False
-            self._log()
+        if not self.is_rage_activated:
+            return
+
+        self.cs_queue.put(('rage_mode', False))
+        self.is_rage_activated = False
+        self._log()
 
     def _send_stop_trigger(self):
-        if self.is_trigger_activated:
-            match self.config.trigger_backend:
-                case 0:
-                    self.cs_queue.put(('trigger', False))
-                case 1:
-                    AutoHotkeyInterface.stop()
-                case _:
-                    return
-            self.is_trigger_activated = False
-            self._log()
+        if not self.is_trigger_activated:
+            return
+
+        match self.config.trigger_backend:
+            case 0:
+                self.cs_queue.put(('trigger', False))
+            case 1:
+                AutoHotkeyInterface.stop()
+            case _:
+                return
+        self.is_trigger_activated = False
+        self._log()
 
     def _start_rage_timer(self):
         self.rage_timer = threading.Timer(self.config.rage_immobility, self._start_rage_trigger)
