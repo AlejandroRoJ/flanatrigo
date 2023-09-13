@@ -82,12 +82,12 @@ class AutoHotkeyInterface:
         code = f'''
             CoordMode("Pixel", "Screen")
             mustPause := True
-            VK216::{{
+            *VK216::{{
                 global mustPause
                 mustPause := False
                 Pause(False)
             }}
-            VK217::{{
+            *VK217::{{
                 global mustPause
                 mustPause := True
             }}
