@@ -12,7 +12,7 @@ for path in pathlib.Path(constants.DLLS_PATH).iterdir():
 from CSFlanaTrigo import CSTrigger
 
 
-def main(python_queue: multiprocessing.Queue):
+def main(queue: multiprocessing.Queue):
     def update_color():
         CSTrigger.rT1 = color[0] - tolerance
         CSTrigger.rT2 = color[0] + tolerance
@@ -40,7 +40,7 @@ def main(python_queue: multiprocessing.Queue):
     update_color()
 
     while True:
-        match python_queue.get():
+        match queue.get():
             case 'trigger', state if state:
                 CSTrigger.Start()
             case 'trigger', _:
