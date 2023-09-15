@@ -1,12 +1,12 @@
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import constants
 
 
 @dataclass
 class Config:
-    _loads = 0
+    _loads: int = field(default=0, init=False)
 
     pinned: bool = constants.PINNED
     tab: int = constants.TAB

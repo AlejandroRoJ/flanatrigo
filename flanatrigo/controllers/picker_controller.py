@@ -207,8 +207,7 @@ class PickerController(Controller):
         if item:
             self.gui.check_picker.setEnabled(True)
         else:
-            if self.gui.check_picker.isChecked():
-                self.gui.check_picker.click()
+            self.gui.check_picker.setChecked(False)
             self.gui.check_picker.setEnabled(False)
 
         self.on_check_picker_change(self.gui.check_picker.isChecked())

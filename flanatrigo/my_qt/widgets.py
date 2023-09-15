@@ -167,10 +167,10 @@ class CentralWidget(QtWidgets.QWidget):
 
         self.check_trigger.clicked.connect(self.trigger_controller.on_check_trigger_change)
         self.check_detector.stateChanged.connect(self.trigger_controller.on_check_detector_change)
-        self.check_picker.clicked.connect(self.picker_controller.on_check_picker_change)
-        self.check_afk.clicked.connect(self.afk_controller.on_check_afk_change)
+        self.check_picker.toggled.connect(self.picker_controller.on_check_picker_change)
+        self.check_afk.toggled.connect(self.afk_controller.on_check_afk_change)
         self.check_beeps.stateChanged.connect(self.others_controller.on_check_beeps_change)
-        self.check_logs.clicked.connect(self.others_controller.on_check_logs_change)
+        self.check_logs.toggled.connect(self.others_controller.on_check_logs_change)
 
         self.slider_detector_size.valueChanged.connect(lambda: self._slider_to_spin(self.slider_detector_size, self.spin_detector_size))
         self.slider_detector_horizontal.valueChanged.connect(lambda: self._slider_to_spin(self.slider_detector_horizontal, self.spin_detector_horizontal))
