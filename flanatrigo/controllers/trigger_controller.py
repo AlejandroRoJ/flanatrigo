@@ -61,6 +61,14 @@ class TriggerController(Loggable, Queueable, Controller):
         if self.config.logs_state:
             self.logger.log_trigger(self.trigger_state, self.rage_state)
 
+    def _on_activation_press_or_release(self, pressed: bool):
+        target_state = self.activation_locked == pressed
+        if target_state:
+            self._stop_trigger()
+        else:
+            self._start_trigger()
+        self.gui.check_trigger.setChecked(not target_state)
+
     def _on_device_event(self, event: keyboard.KeyboardEvent | mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent):
         if not self.gui.check_trigger.isChecked():
             return
@@ -258,18 +266,10 @@ class TriggerController(Loggable, Queueable, Controller):
         self.config.release()
 
     def on_activation_press(self):
-        if self.activation_locked:
-            return
-
-        self._start_trigger()
-        self.gui.check_trigger.setChecked(True)
+        self._on_activation_press_or_release(pressed=True)
 
     def on_activation_release(self):
-        if self.activation_locked:
-            return
-
-        self._stop_trigger()
-        self.gui.check_trigger.setChecked(False)
+        self._on_activation_press_or_release(pressed=False)
 
     def on_change_mode_press(self):
         if self.config.trigger_backend:
@@ -295,16 +295,16 @@ class TriggerController(Loggable, Queueable, Controller):
         self.save_config()
 
     def on_check_trigger_change(self, state: bool):
-        if state:
+        self.activation_locked = state
+
+        if self.activation_locked:
             self._start_trigger()
+            if self.activated_player:
+                self.activated_player.play()
         else:
             self._stop_trigger()
-
-        self.activation_locked = state
-        if state and self.activated_player:
-            self.activated_player.play()
-        elif not state and self.deactivated_player:
-            self.deactivated_player.play()
+            if self.deactivated_player:
+                self.deactivated_player.play()
 
     def on_combo_trigger_backend_change(self, index: int):
         if self.gui.check_trigger.isChecked():
