@@ -43,8 +43,8 @@ class OthersController(Loggable, Queueable, Controller):
         self.config.beeps_state = test_mode
         self.save_config()
         self._send_trigger_attribute('test_mode', test_mode)
+        AutoHotkeyInterface.close()
         AutoHotkeyInterface.test_mode = test_mode
-        AutoHotkeyInterface.restart()
         if self.gui.check_trigger.isChecked():
             AutoHotkeyInterface.start()
 
