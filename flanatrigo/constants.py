@@ -41,7 +41,7 @@ VOLUME = 50
 TEST_MODE = 0
 LOGS_STATE = False
 LOGS_MARK_BUTTON = 'f8'
-VERSION = 'v1.2.2'
+VERSION = 'v1.3.0'
 
 # Logs
 LOGS_PATH = 'logs'
