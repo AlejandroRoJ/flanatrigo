@@ -217,6 +217,14 @@ class TriggerController(Loggable, Queueable, Controller):
 
         screen_size = QtWidgets.QApplication.primaryScreen().size()
         self._send_trigger_attribute('screen_size', (screen_size.width(), screen_size.height()))
+        self._send_trigger_attribute('detector_size', self.config.detector_size)
+        self._send_trigger_attribute('detector_horizontal', self.config.detector_horizontal)
+        self._send_trigger_attribute('color', self.config.color)
+        self._send_trigger_attribute('rage_mode', self.config.rage_mode)
+        self._send_trigger_attribute('rage_immobility', self.config.rage_immobility)
+        self._send_trigger_attribute('tolerance', self.config.tolerance)
+        self._send_trigger_attribute('rage_tolerance', self.config.rage_tolerance)
+        self._send_trigger_attribute('test_mode', self.config.test_mode)
         AutoHotkeyInterface.screen_size = (screen_size.width(), screen_size.height())
         AutoHotkeyInterface.detector_size = self.config.detector_size
         AutoHotkeyInterface.detector_horizontal = self.config.detector_horizontal
