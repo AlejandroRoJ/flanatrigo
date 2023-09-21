@@ -30,8 +30,10 @@ class TriggerController(Loggable, Queueable, Controller):
         self.timer_crosshair_window.setSingleShot(True)
         self.trigger_timer = None
         self.rage_timer = None
-        self.cadence_mouse_press_hook = None
-        self.cadence_mouse_double_hook = None
+        self.is_shooting = False
+        self.mouse_press_hook = mouse.on_pressed(self._on_mouse_press)
+        self.mouse_double_hook = mouse.on_double_click(self._on_mouse_press)
+        self.mouse_release_hook = mouse.on_button(self._on_mouse_release, buttons=(mouse.LEFT,), types=(mouse.UP,))
         self.rage_keyboard_hook = None
         self.rage_mouse_hook = None
 
@@ -83,9 +85,14 @@ class TriggerController(Loggable, Queueable, Controller):
 
     def _on_mouse_press(self):
         if self.gui.check_trigger.isChecked():
-            self._send_stop_trigger()
             self._stop_trigger_timer()
+            self._send_stop_trigger()
             self._start_trigger_timer()
+
+    def _on_mouse_release(self):
+        if self.is_shooting:
+            self.is_shooting = False
+            self._send_start_trigger()
 
     def _send_start_rage(self):
         if self.rage_state:
@@ -97,6 +104,9 @@ class TriggerController(Loggable, Queueable, Controller):
 
     def _send_start_trigger(self):
         if self.trigger_state:
+            return
+        if mouse.is_pressed():
+            self.is_shooting = True
             return
 
         match self.config.trigger_backend:
@@ -174,12 +184,12 @@ class TriggerController(Loggable, Queueable, Controller):
             self.trigger_timer.cancel()
 
     def _update_hooks(self):
-        if self.cadence_mouse_press_hook:
-            mouse.unhook(self.cadence_mouse_press_hook)
-            self.cadence_mouse_press_hook = None
-        if self.cadence_mouse_double_hook:
-            mouse.unhook(self.cadence_mouse_double_hook)
-            self.cadence_mouse_double_hook = None
+        if self.mouse_press_hook:
+            mouse.unhook(self.mouse_press_hook)
+            self.mouse_press_hook = None
+        if self.mouse_double_hook:
+            mouse.unhook(self.mouse_double_hook)
+            self.mouse_double_hook = None
         if self.rage_keyboard_hook:
             keyboard.unhook(self.rage_keyboard_hook)
             self.rage_keyboard_hook = None
@@ -188,8 +198,8 @@ class TriggerController(Loggable, Queueable, Controller):
             self.rage_mouse_hook = None
 
         if self.config.cadence:
-            self.cadence_mouse_press_hook = mouse.on_pressed(self._on_mouse_press)
-            self.cadence_mouse_double_hook = mouse.on_double_click(self._on_mouse_press)
+            self.mouse_press_hook = mouse.on_pressed(self._on_mouse_press)
+            self.mouse_double_hook = mouse.on_double_click(self._on_mouse_press)
 
         if self.config.rage_mode:
             self.rage_keyboard_hook = keyboard.hook(self._on_device_event)
