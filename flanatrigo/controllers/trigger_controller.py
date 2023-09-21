@@ -62,12 +62,12 @@ class TriggerController(Loggable, Queueable, Controller):
             self.logger.log_trigger(self.trigger_state, self.rage_state)
 
     def _on_activation_press_or_release(self, pressed: bool):
-        target_state = self.activation_locked == pressed
+        target_state = self.activation_locked != pressed
         if target_state:
-            self._stop_trigger()
-        else:
             self._start_trigger()
-        self.gui.check_trigger.setChecked(not target_state)
+        else:
+            self._stop_trigger()
+        self.gui.check_trigger.setChecked(target_state)
 
     def _on_device_event(self, event: keyboard.KeyboardEvent | mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent):
         if not self.gui.check_trigger.isChecked():
@@ -91,7 +91,7 @@ class TriggerController(Loggable, Queueable, Controller):
         if self.rage_state:
             return
 
-        self.cs_queue.put(('rage_mode', True))
+        self._send_trigger_attribute('rage_mode', True)
         self.rage_state = True
         self._log()
 
@@ -101,7 +101,7 @@ class TriggerController(Loggable, Queueable, Controller):
 
         match self.config.trigger_backend:
             case 0:
-                self.cs_queue.put(('trigger', True))
+                self._send_trigger_attribute('trigger', True)
             case 1:
                 AutoHotkeyInterface.start()
             case _:
@@ -113,7 +113,7 @@ class TriggerController(Loggable, Queueable, Controller):
         if not self.rage_state:
             return
 
-        self.cs_queue.put(('rage_mode', False))
+        self._send_trigger_attribute('rage_mode', False)
         self.rage_state = False
         self._log()
 
@@ -123,7 +123,7 @@ class TriggerController(Loggable, Queueable, Controller):
 
         match self.config.trigger_backend:
             case 0:
-                self.cs_queue.put(('trigger', False))
+                self._send_trigger_attribute('trigger', False)
             case 1:
                 AutoHotkeyInterface.stop()
             case _:
@@ -318,6 +318,12 @@ class TriggerController(Loggable, Queueable, Controller):
         if self.gui.check_trigger.isChecked():
             self.gui.check_trigger.click()
         self.config.trigger_backend = index
+        if self.config.trigger_backend == 1 and self.gui.combo_test_mode.currentIndex() == 2:
+            self.config.test_mode = 1
+            self.gui.combo_test_mode.setCurrentIndex(1)
+            self.gui.combo_test_mode.model().item(2).setEnabled(False)
+        else:
+            self.gui.combo_test_mode.model().item(2).setEnabled(True)
         self.config.rage_mode = False
         self.save_config()
         AutoHotkeyInterface.close()

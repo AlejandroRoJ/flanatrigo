@@ -8,5 +8,5 @@ class Queueable(ABC):
         super().__init__(*args, **kwargs)
         self.cs_queue = cs_queue
 
-    def _send_trigger_attribute(self, name: str, value: Any):
+    def _send_trigger_attribute(self, name: str, value: Any = None):
         self.cs_queue.put((name, value))
