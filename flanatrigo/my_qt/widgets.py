@@ -31,7 +31,11 @@ class CentralWidget(QtWidgets.QWidget):
     label_afk_activation_button: QtWidgets.QLabel
     label_afk_press_button: QtWidgets.QLabel
     label_afk_interval: QtWidgets.QLabel
+    label_defuser_activation_button: QtWidgets.QLabel
+    label_defuser_press_button: QtWidgets.QLabel
+    label_defuser_advance: QtWidgets.QLabel
     label_volume: QtWidgets.QLabel
+    label_test_mode: QtWidgets.QLabel
     label_logs_mark: QtWidgets.QLabel
     label_version: QtWidgets.QLabel
 
@@ -41,16 +45,18 @@ class CentralWidget(QtWidgets.QWidget):
     line_picker_activation_button: HotkeyLineEdit
     line_afk_activation_button: HotkeyLineEdit
     line_afk_press_button: HotkeyLineEdit
+    line_defuser_activation_button: HotkeyLineEdit
+    line_defuser_press_button: HotkeyLineEdit
     line_logs_mark_button: HotkeyLineEdit
 
     combo_trigger_backend: QtWidgets.QComboBox
+    combo_test_mode: QtWidgets.QComboBox
 
     button_color: QtWidgets.QPushButton
     button_restore_config: QtWidgets.QPushButton
     button_clear_logs: QtWidgets.QPushButton
 
     check_detector: QtWidgets.QCheckBox
-    check_beeps: QtWidgets.QCheckBox
 
     slider_detector_size: AgileSlider
     slider_detector_horizontal: AgileSlider
@@ -63,6 +69,7 @@ class CentralWidget(QtWidgets.QWidget):
     slider_picker_duration: AgileSlider
     slider_picker_steps: AgileSlider
     slider_afk_interval: AgileSlider
+    slider_defuser_advance: AgileSlider
     slider_volume: AgileSlider
 
     spin_detector_size: NoWheelSpinBox
@@ -79,11 +86,13 @@ class CentralWidget(QtWidgets.QWidget):
     spin_picker_duration: NoWheelDoubleSpinBox
     spin_picker_steps: NoWheelSpinBox
     spin_afk_interval: NoWheelDoubleSpinBox
+    spin_defuser_advance: NoWheelDoubleSpinBox
     spin_volume: NoWheelSpinBox
 
     tab_trigger: QtWidgets.QWidget
     tab_picker: QtWidgets.QWidget
     tab_afk: QtWidgets.QWidget
+    tab_defuser: QtWidgets.QWidget
     tab_others: QtWidgets.QWidget
 
     list_agents: DeselectableListWidget
@@ -108,6 +117,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.trigger_controller = None
         self.picker_controller = None
         self.afk_controller = None
+        self.defuser_controller = None
         self.others_controller = None
 
         self.check_trigger = Switch(self.tab_trigger, track_radius=8, thumb_radius=10, os_colors=False)
@@ -116,6 +126,8 @@ class CentralWidget(QtWidgets.QWidget):
         self.tab_picker.layout().itemAt(0).insertWidget(0, self.check_picker)
         self.check_afk = Switch(self.tab_picker, track_radius=8, thumb_radius=10, os_colors=False)
         self.tab_afk.layout().insertWidget(0, self.check_afk)
+        self.check_defuser = Switch(self.tab_picker, track_radius=8, thumb_radius=10, os_colors=False)
+        self.tab_defuser.layout().insertWidget(0, self.check_defuser)
         self.check_logs = Switch(self.tab_others, track_radius=7, thumb_radius=9, os_colors=False)
         self.group_logs.layout().insertWidget(0, self.check_logs)
         self.line_logs = QtWidgets.QFrame()
@@ -140,11 +152,12 @@ class CentralWidget(QtWidgets.QWidget):
         self.slider_detector_horizontal.setPalette(palette)
         self.slider_detector_vertical.setPalette(palette)
 
-    def connect_signals(self, trigger_controller, picker_controller, afk_controller, others_controller):
-        self.trigger_controller = trigger_controller
-        self.picker_controller = picker_controller
-        self.afk_controller = afk_controller
-        self.others_controller = others_controller
+    def connect_signals(self, *args):
+        self.trigger_controller = args[0]
+        self.picker_controller = args[1]
+        self.afk_controller = args[2]
+        self.defuser_controller = args[3]
+        self.others_controller = args[4]
 
         self.line_hexadecimal.textChanged.connect(self.trigger_controller.on_line_hexadecimal_change)
         self.line_trigger_activation_button.add_handlers(self.trigger_controller.on_activation_press, self.trigger_controller.on_activation_release, self.trigger_controller.on_double_press_activation)
@@ -156,10 +169,14 @@ class CentralWidget(QtWidgets.QWidget):
         self.line_afk_activation_button.add_handlers(self.afk_controller.on_activation_press, double_press_handler=self.afk_controller.on_activation_press)
         self.line_afk_activation_button.textChanged.connect(lambda: self.afk_controller.on_line_buttons_change(self.line_afk_activation_button))
         self.line_afk_press_button.textChanged.connect(lambda: self.afk_controller.on_line_buttons_change(self.line_afk_press_button))
+        self.line_defuser_activation_button.add_handlers(self.defuser_controller.on_activation_press, double_press_handler=self.defuser_controller.on_activation_press)
+        self.line_defuser_activation_button.textChanged.connect(lambda: self.defuser_controller.on_line_buttons_change(self.line_defuser_activation_button))
+        self.line_defuser_press_button.textChanged.connect(lambda: self.defuser_controller.on_line_buttons_change(self.line_defuser_press_button))
         self.line_logs_mark_button.add_handlers(self.others_controller.on_logs_activation_press, double_press_handler=self.others_controller.on_logs_activation_press)
         self.line_logs_mark_button.textChanged.connect(lambda: self.others_controller.on_line_buttons_change(self.line_logs_mark_button))
 
         self.combo_trigger_backend.currentIndexChanged.connect(self.trigger_controller.on_combo_trigger_backend_change)
+        self.combo_test_mode.currentIndexChanged.connect(self.others_controller.on_combo_test_mode_change)
 
         self.button_color.clicked.connect(self.trigger_controller.open_color_dialog)
         self.button_restore_config.clicked.connect(self.others_controller.restore_config)
@@ -169,7 +186,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.check_detector.stateChanged.connect(self.trigger_controller.on_check_detector_change)
         self.check_picker.toggled.connect(self.picker_controller.on_check_picker_change)
         self.check_afk.toggled.connect(self.afk_controller.on_check_afk_change)
-        self.check_beeps.stateChanged.connect(self.others_controller.on_check_beeps_change)
+        self.check_defuser.toggled.connect(self.defuser_controller.on_check_defuser_change)
         self.check_logs.toggled.connect(self.others_controller.on_check_logs_change)
 
         self.slider_detector_size.valueChanged.connect(lambda: self._slider_to_spin(self.slider_detector_size, self.spin_detector_size))
@@ -183,6 +200,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.slider_picker_duration.valueChanged.connect(lambda: self._slider_to_spin(self.slider_picker_duration, self.spin_picker_duration))
         self.slider_picker_steps.valueChanged.connect(lambda: self._slider_to_spin(self.slider_picker_steps, self.spin_picker_steps))
         self.slider_afk_interval.valueChanged.connect(lambda: self._slider_to_spin(self.slider_afk_interval, self.spin_afk_interval))
+        self.slider_defuser_advance.valueChanged.connect(lambda: self._slider_to_spin(self.slider_defuser_advance, self.spin_defuser_advance))
         self.slider_volume.valueChanged.connect(lambda: self._slider_to_spin(self.slider_volume, self.spin_volume))
 
         self.spin_detector_size.valueChanged.connect(lambda: self.trigger_controller.on_spin_change(self.spin_detector_size, self.slider_detector_size))
@@ -202,6 +220,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.spin_picker_duration.valueChanged.connect(lambda: self.picker_controller.on_spin_change(self.spin_picker_duration, self.slider_picker_duration))
         self.spin_picker_steps.valueChanged.connect(lambda: self.picker_controller.on_spin_change(self.spin_picker_steps, self.slider_picker_steps))
         self.spin_afk_interval.valueChanged.connect(lambda: self.afk_controller.on_spin_change(self.spin_afk_interval, self.slider_afk_interval))
+        self.spin_defuser_advance.valueChanged.connect(lambda: self.defuser_controller.on_spin_change(self.spin_defuser_advance, self.slider_defuser_advance))
         self.spin_volume.valueChanged.connect(lambda: self.afk_controller.on_spin_change(self.spin_volume, self.slider_volume))
         self.spin_volume.valueChanged.connect(self.trigger_controller.on_spin_volume_change)
 
@@ -209,7 +228,9 @@ class CentralWidget(QtWidgets.QWidget):
 
     @staticmethod
     def _slider_to_spin(slider: QtWidgets.QSlider, spin: NoWheelSpinBox | NoWheelDoubleSpinBox):
-        spin.setValue(slider.value() / 100 if isinstance(spin, NoWheelDoubleSpinBox) else slider.value())
+        spin.setValue(
+            slider.value() / (10 ** spin.decimals()) if isinstance(spin, NoWheelDoubleSpinBox) else slider.value()
+        )
 
     def close(self) -> bool:
         self.trigger_controller.close()

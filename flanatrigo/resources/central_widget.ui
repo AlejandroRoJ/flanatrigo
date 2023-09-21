@@ -33,9 +33,6 @@
        <string>Trigger</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
-       <property name="spacing">
-        <number>9</number>
-       </property>
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -56,7 +53,7 @@
             <number>11</number>
            </property>
            <property name="topMargin">
-            <number>11</number>
+            <number>3</number>
            </property>
           </layout>
          </item>
@@ -118,7 +115,7 @@
             <x>0</x>
             <y>0</y>
             <width>586</width>
-            <height>870</height>
+            <height>871</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_31" stretch="0,1,0,0,0">
@@ -127,9 +124,6 @@
            </property>
            <property name="leftMargin">
             <number>11</number>
-           </property>
-           <property name="topMargin">
-            <number>8</number>
            </property>
            <item>
             <widget class="QGroupBox" name="groupBox_3">
@@ -1350,6 +1344,12 @@
          </property>
          <item>
           <widget class="QLabel" name="label_picker_delay">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="font">
             <font>
              <pointsize>12</pointsize>
@@ -1430,6 +1430,12 @@
          </property>
          <item>
           <widget class="QLabel" name="label_picker_duration">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="font">
             <font>
              <pointsize>12</pointsize>
@@ -1510,6 +1516,12 @@
          </property>
          <item>
           <widget class="QLabel" name="label_picker_steps">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="font">
             <font>
              <pointsize>12</pointsize>
@@ -1825,6 +1837,198 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_defuser">
+      <attribute name="title">
+       <string>Autodefuser</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_40">
+       <property name="spacing">
+        <number>18</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_38">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_defuser_activation_button">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>On/Off</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="HotkeyLineEdit" name="line_defuser_activation_button">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="contextMenuPolicy">
+            <enum>Qt::PreventContextMenu</enum>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_41">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_defuser_press_button">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Defusar con</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="HotkeyLineEdit" name="line_defuser_press_button">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="contextMenuPolicy">
+            <enum>Qt::PreventContextMenu</enum>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_39">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_defuser_advance">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Adelantar el defuse</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_26">
+           <item>
+            <widget class="AgileSlider" name="slider_defuser_advance">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="maximum">
+              <number>10000</number>
+             </property>
+             <property name="singleStep">
+              <number>1</number>
+             </property>
+             <property name="pageStep">
+              <number>50</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+              <enum>QSlider::TicksAbove</enum>
+             </property>
+             <property name="tickInterval">
+              <number>2500</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="NoWheelDoubleSpinBox" name="spin_defuser_advance">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="accelerated">
+              <bool>true</bool>
+             </property>
+             <property name="correctionMode">
+              <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+             </property>
+             <property name="keyboardTracking">
+              <bool>false</bool>
+             </property>
+             <property name="suffix">
+              <string> s</string>
+             </property>
+             <property name="decimals">
+              <number>4</number>
+             </property>
+             <property name="maximum">
+              <double>999.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_9">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tab_others">
       <attribute name="title">
        <string>Otros</string>
@@ -1922,11 +2126,37 @@
            <number>12</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="check_beeps">
-            <property name="text">
-             <string>Reproducir pitido al detectar</string>
+           <layout class="QVBoxLayout" name="verticalLayout_37">
+            <property name="spacing">
+             <number>2</number>
             </property>
-           </widget>
+            <item>
+             <widget class="QLabel" name="label_test_mode">
+              <property name="text">
+               <string>Modo</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="combo_test_mode">
+              <item>
+               <property name="text">
+                <string>Ninguno</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Beep</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Consola</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QGroupBox" name="group_logs">

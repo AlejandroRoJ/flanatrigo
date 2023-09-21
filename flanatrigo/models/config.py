@@ -35,8 +35,12 @@ class Config:
     afk_press_button: str = constants.AFK_PRESS_BUTTON
     afk_interval: float = constants.AFK_INTERVAL
 
+    defuser_activation_button: str = constants.DEFUSER_ACTIVATION_BUTTON
+    defuser_press_button: str = constants.DEFUSER_PRESS_BUTTON
+    defuser_advance: float = constants.DEFUSER_ADVANCE
+
     volume: int = constants.VOLUME
-    beeps_state: bool = constants.BEEPS_STATE
+    test_mode: int = constants.TEST_MODE
     logs_state: bool = constants.LOGS_STATE
     logs_mark_button: str = constants.LOGS_MARK_BUTTON
 

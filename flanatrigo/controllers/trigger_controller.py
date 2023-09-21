@@ -232,7 +232,7 @@ class TriggerController(Loggable, Queueable, Controller):
         AutoHotkeyInterface.color = self.config.color
         AutoHotkeyInterface.tolerance = self.config.tolerance
         AutoHotkeyInterface.cadence = self.config.cadence
-        AutoHotkeyInterface.test_mode = self.config.beeps_state
+        AutoHotkeyInterface.test_mode = self.config.test_mode
         AutoHotkeyInterface.update_region()
         self.load_audio()
         self.gui.check_trigger.setChecked(constants.TRIGGER_STATE)

@@ -22,7 +22,12 @@ class Controller(Salvable, ABC):
         spin.blockSignals(True)
         slider.blockSignals(True)
         spin.setValue(value)
-        slider.setValue(min(int(value * 100) if isinstance(spin, NoWheelDoubleSpinBox) else value, slider.maximum()))
+        slider.setValue(
+            min(
+                int(value * 10 ** spin.decimals()) if isinstance(spin, NoWheelDoubleSpinBox) else value,
+                slider.maximum()
+            )
+        )
         slider.blockSignals(False)
         spin.blockSignals(False)
 
@@ -31,7 +36,9 @@ class Controller(Salvable, ABC):
         self.save_config()
 
     def on_spin_change(self, spin: NoWheelSpinBox | NoWheelDoubleSpinBox, slider: QtWidgets.QSlider) -> str:
-        slider.setValue(int(spin.value() * 100) if isinstance(spin, NoWheelDoubleSpinBox) else spin.value())
+        slider.setValue(
+            int(spin.value() * 10 ** spin.decimals()) if isinstance(spin, NoWheelDoubleSpinBox) else spin.value()
+        )
         attribute_name = spin.objectName()[len('spin_'):]
         setattr(self.config, attribute_name, spin.value())
         self.save_config()

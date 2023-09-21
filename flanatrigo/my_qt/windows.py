@@ -37,8 +37,8 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
         self.move_to_center()
         self.show()
 
-    def connect_signals(self, trigger_controller, picker_controller, afk_controller, others_controller):
-        self.central_widget.connect_signals(trigger_controller, picker_controller, afk_controller, others_controller)
+    def connect_signals(self, *args):
+        self.central_widget.connect_signals(*args)
 
         self.button_close.clicked.connect(self.close)
         self.button_maximize.clicked.connect(self.maximize)
