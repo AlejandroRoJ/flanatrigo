@@ -7,6 +7,7 @@ import pytesseract
 from PIL import ImageGrab
 from PySide6 import QtGui, QtWidgets
 
+import color_utils
 import constants
 from controllers.controller import Controller
 from exceptions import NotFoundError
@@ -80,16 +81,10 @@ class PickerController(Controller):
             self._reclick(distance=50)
 
     def _is_confirm(self):
-        return self._is_region_color(self.confirm_pieze_region)
-
-    def _is_region_color(self, region: tuple[int, int, int, int], target_color=constants.CONFIRM_PIEZE_COLOR):
-        color = self._region_color_mean(region)
-        return (
-            abs(target_color[0] - color[0]) < constants.CONFIRM_PIEZE_COLOR_TOLERANCE
-            and
-            abs(target_color[1] - color[1]) < constants.CONFIRM_PIEZE_COLOR_TOLERANCE
-            and
-            abs(target_color[2] - color[2]) < constants.CONFIRM_PIEZE_COLOR_TOLERANCE
+        return color_utils.is_region_color(
+            self.confirm_pieze_region,
+            constants.CONFIRM_PIEZE_COLOR,
+            constants.CONFIRM_PIEZE_COLOR_TOLERANCE
         )
 
     def _picking(self):
@@ -105,29 +100,6 @@ class PickerController(Controller):
         mouse.move(0, -distance, absolute=False, duration=duration, steps_per_second=self.gui.spin_picker_steps.value())
         mouse.move(0, distance, absolute=False, duration=duration, steps_per_second=self.gui.spin_picker_steps.value())
         mouse.click()
-
-    @staticmethod
-    def _region_color_mean(region: tuple[int, int, int, int]) -> tuple[int, int, int]:
-        image = ImageGrab.grab(region)
-        width = image.width
-        height = image.height
-        n_pixels = width * height
-        image = image.load()
-        rs = []
-        gs = []
-        bs = []
-        for y in range(height):
-            for x in range(width):
-                # noinspection PyUnresolvedReferences
-                r, g, b = image[x, y]
-                rs.append(r ** 2)
-                gs.append(g ** 2)
-                bs.append(b ** 2)
-        return (
-            round((sum(rs) / n_pixels) ** (1 / 2)),
-            round((sum(gs) / n_pixels) ** (1 / 2)),
-            round((sum(bs) / n_pixels) ** (1 / 2))
-        )
 
     def _run_picker(self):
         while self.thread_event.wait():
