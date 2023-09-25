@@ -1,6 +1,5 @@
 import threading
 import time
-from builtins import super
 
 import keyboard
 import mouse

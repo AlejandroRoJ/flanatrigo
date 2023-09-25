@@ -1,6 +1,5 @@
 import threading
 import time
-from builtins import super
 from collections.abc import Callable, Iterable
 from typing import Any
 
