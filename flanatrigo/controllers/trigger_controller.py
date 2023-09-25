@@ -7,7 +7,7 @@ import mouse
 from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
 
 import constants
-from controllers.controller import Controller
+from controllers.cs_controller import CSController
 from models.autohotkey_interface import AutoHotkeyInterface
 from models.loggable import Loggable
 from models.queueable import Queueable
