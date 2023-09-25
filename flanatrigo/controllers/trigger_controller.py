@@ -15,7 +15,7 @@ from my_qt.spin_boxes import NoWheelDoubleSpinBox, NoWheelSpinBox
 from my_qt.windows import CrosshairWindow
 
 
-class TriggerController(Loggable, Queueable, Controller):
+class TriggerController(Loggable, CSController):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.crosshair_window: CrosshairWindow | None = None
