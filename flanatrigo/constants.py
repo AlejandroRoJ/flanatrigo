@@ -99,6 +99,8 @@ PICKER_MENU_WORDS = ('jugar', 'notas', 'trayectoria', 'colección', 'agentes', '
 PINNED = False
 RAGE_COLOR = (90, 30, 30)
 RECLICK_WAITING_SECONDS = 2
+RESIZE_AREA_CORNER_FACTOR = 2
+RESIZE_AREA_SIZE = 7
 SCREEN_SIZE = (1920, 1080)
 SPANISH_KEYS_TRANSLATION = (
     ('mayusculas', 'shift'), ('flecha', ''), ('arriba', 'up'), ('abajo', 'down'), ('izquierda', 'left'),

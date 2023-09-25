@@ -2,6 +2,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 import constants
 from models.config import Config
+from models.enums import WindowBorder
 from models.salvable import Salvable
 from my_qt.bases import MixinMeta
 from my_qt.buttons import TitleButton
@@ -11,10 +12,12 @@ from my_qt.widgets import CentralWidget
 class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
     def __init__(self, config: Config):
         super().__init__(config)
-        self.last_position = None
+        self.last_position: QtCore.QPoint | None = None
         self.last_width = None
         self.was_maximized = False
         self.is_moving = False
+        self.current_border: WindowBorder | None = None
+        self.grabbed_border: WindowBorder | None = None
 
         self.icon = QtGui.QIcon(constants.LOGO_PATH)
         self.setWindowTitle('TrigoMorao')
@@ -44,6 +47,56 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
 
         self.central_widget.tab.currentChanged.connect(self._on_tab_changed)
 
+    def _drag(self):
+        if self.last_position.y() > constants.TITLE_BAR_HEIGHT:
+            return
+
+        if self.isMaximized():
+            self.maximize()
+            self.was_maximized = True
+            horizontal_offset = self.last_width // 2
+            vertical_offset = constants.TITLE_BAR_HEIGHT // 2
+            self.move(self.cursor().pos().x() - horizontal_offset, self.cursor().pos().y() - vertical_offset)
+            self.last_position = QtCore.QPoint(horizontal_offset, vertical_offset)
+        else:
+            self.move(self.pos() + self.mapFromGlobal(self.cursor().pos()) - self.last_position)
+
+    def _get_current_border(self, position: QtCore.QPoint) -> WindowBorder | None:
+        if self.isMaximized():
+            return
+        elif (
+            position.x() <= constants.RESIZE_AREA_SIZE * constants.RESIZE_AREA_CORNER_FACTOR
+            and
+            position.y() <= constants.RESIZE_AREA_SIZE * constants.RESIZE_AREA_CORNER_FACTOR
+        ):
+            return WindowBorder.LEFT_TOP
+        elif (
+            self.width() - constants.RESIZE_AREA_SIZE * constants.RESIZE_AREA_CORNER_FACTOR <= position.x()
+            and
+            position.y() <= constants.RESIZE_AREA_SIZE * constants.RESIZE_AREA_CORNER_FACTOR
+        ):
+            return WindowBorder.RIGHT_TOP
+        elif (
+            position.x() <= constants.RESIZE_AREA_SIZE * constants.RESIZE_AREA_CORNER_FACTOR
+            and
+            self.height() - constants.RESIZE_AREA_SIZE * constants.RESIZE_AREA_CORNER_FACTOR <= position.y()
+        ):
+            return WindowBorder.LEFT_BOTTOM
+        elif (
+            self.width() - constants.RESIZE_AREA_SIZE * constants.RESIZE_AREA_CORNER_FACTOR <= position.x()
+            and
+            self.height() - constants.RESIZE_AREA_SIZE * constants.RESIZE_AREA_CORNER_FACTOR <= position.y()
+        ):
+            return WindowBorder.RIGHT_BOTTOM
+        elif position.x() <= constants.RESIZE_AREA_SIZE:
+            return WindowBorder.LEFT
+        elif self.width() - constants.RESIZE_AREA_SIZE <= position.x():
+            return WindowBorder.RIGHT
+        elif position.y() <= constants.RESIZE_AREA_SIZE:
+            return WindowBorder.TOP
+        elif self.height() - constants.RESIZE_AREA_SIZE <= position.y():
+            return WindowBorder.BOTTOM
+
     def _on_pin_changed(self, state: bool):
         self.set_on_top(state)
         self.config.pinned = state
@@ -53,13 +106,74 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
         self.config.tab = index
         self.save_config()
 
+    def _resize(self):
+        local_cursor_position = self.mapFromGlobal(self.cursor().pos())
+        x_distance = local_cursor_position.x() - self.last_position.x()
+        y_distance = local_cursor_position.y() - self.last_position.y()
+
+        match self.grabbed_border:
+            case WindowBorder.LEFT:
+                if (new_width := self.width() - x_distance) >= self.minimumWidth():
+                    self.setGeometry(self.x() + x_distance, self.y(), new_width, self.height())
+            case WindowBorder.RIGHT:
+                self.resize(local_cursor_position.x(), self.height())
+            case WindowBorder.TOP:
+                if (new_height := self.height() - y_distance) >= self.minimumHeight():
+                    self.setGeometry(self.x(), self.y() + y_distance, self.width(), new_height)
+            case WindowBorder.BOTTOM:
+                self.resize(self.width(), local_cursor_position.y())
+            case WindowBorder.LEFT_TOP:
+                if (new_width := self.width() - x_distance) >= self.minimumWidth():
+                    new_x = self.x() + x_distance
+                else:
+                    new_x = self.x()
+                if (new_height := self.height() - y_distance) >= self.minimumHeight():
+                    new_y = self.y() + y_distance
+                else:
+                    new_y = self.y()
+                self.setGeometry(new_x, new_y, new_width, new_height)
+            case WindowBorder.RIGHT_TOP:
+                if (new_height := self.height() - y_distance) >= self.minimumHeight():
+                    new_y = self.y() + y_distance
+                else:
+                    new_y = self.y()
+                self.setGeometry(self.x(), new_y, local_cursor_position.x(), new_height)
+            case WindowBorder.LEFT_BOTTOM:
+                if (new_width := self.width() - x_distance) >= self.minimumWidth():
+                    new_x = self.x() + x_distance
+                else:
+                    new_x = self.x()
+                self.setGeometry(new_x, self.y(), new_width, local_cursor_position.y())
+            case WindowBorder.RIGHT_BOTTOM:
+                self.resize(local_cursor_position.x(), local_cursor_position.y())
+
+    def _update_cursor(self):
+        if self.current_border in (WindowBorder.LEFT_TOP, WindowBorder.RIGHT_BOTTOM):
+            self.setCursor(QtCore.Qt.SizeFDiagCursor)
+        elif self.current_border in (WindowBorder.RIGHT_TOP, WindowBorder.LEFT_BOTTOM):
+            self.setCursor(QtCore.Qt.SizeBDiagCursor)
+        elif self.current_border in (WindowBorder.LEFT, WindowBorder.RIGHT):
+            self.setCursor(QtCore.Qt.SizeHorCursor)
+        elif self.current_border in (WindowBorder.TOP, WindowBorder.BOTTOM):
+            self.setCursor(QtCore.Qt.SizeVerCursor)
+        else:
+            self.setCursor(QtCore.Qt.ArrowCursor)
+
     def close(self) -> bool:
         self.central_widget.close()
         return super().close()
 
+    def event(self, event: QtCore.QEvent) -> bool:
+        if isinstance(event, QtGui.QHoverEvent) and not self.is_moving:
+            self.current_border = self._get_current_border(event.pos())
+            self._update_cursor()
+
+        return super().event(event)
+
     def load_config(self):
         self.config.load()
 
+        self.resize(self.sizeHint())
         self.button_pin.setChecked(self.config.pinned)
         self.central_widget.tab.setCurrentIndex(self.config.tab)
 
@@ -85,31 +199,30 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
         super().mouseDoubleClickEvent(event)
         if event.button() == QtCore.Qt.MouseButton.LeftButton and event.pos().y() <= constants.TITLE_BAR_HEIGHT:
             self.last_position = None
+            self.grabbed_border = None
             self.maximize()
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent):
         super().mouseMoveEvent(event)
-        if self.last_position is not None:
-            self.is_moving = True
-            if self.isMaximized():
-                self.maximize()
-                self.was_maximized = True
-                horizontal_offset = self.last_width // 2
-                vertical_offset = constants.TITLE_BAR_HEIGHT // 2
-                self.move(QtGui.QCursor.pos().x() - horizontal_offset, QtGui.QCursor.pos().y() - vertical_offset)
-                self.last_position = QtCore.QPoint(horizontal_offset, vertical_offset)
-            else:
-                self.move(self.mapToParent(self.mapFromGlobal(QtGui.QCursor.pos()) - self.last_position))
+        if self.last_position is None:
+            return
+
+        self.is_moving = True
+        if self.grabbed_border:
+            self._resize()
+        else:
+            self._drag()
 
     def mousePressEvent(self, event: QtGui.QMouseEvent):
         super().mousePressEvent(event)
         self.setFocus()
-        if event.button() == QtCore.Qt.MouseButton.LeftButton and event.pos().y() <= constants.TITLE_BAR_HEIGHT:
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
             self.last_position = event.pos()
+            self.grabbed_border = self.current_border
 
     def mouseReleaseEvent(self, event: QtGui.QMouseEvent):
         super().mouseReleaseEvent(event)
-        cursor_pos = QtGui.QCursor.pos()
+        cursor_pos = self.cursor().pos()
         current_screen = QtWidgets.QApplication.screenAt(cursor_pos)
         current_screen_top = QtWidgets.QApplication.primaryScreen().size().height() - current_screen.size().height()
         if self.is_moving:
@@ -123,14 +236,15 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
                 self.was_maximized = False
             self.is_moving = False
         self.last_position = None
+        self.grabbed_border = None
 
     def move_to_center(self):
-        current_screen = QtWidgets.QApplication.screenAt(QtGui.QCursor.pos())
+        current_screen = QtWidgets.QApplication.screenAt(self.cursor().pos())
         self.move(
             self.mapToGlobal(
                 QtCore.QPoint(
-                    current_screen.geometry().x() + current_screen.geometry().width() // 2 - self.size().width() // 2,
-                    current_screen.geometry().y() + current_screen.geometry().height() // 2 - self.size().height() // 2
+                    current_screen.geometry().x() + (current_screen.geometry().width() - self.size().width()) // 2,
+                    current_screen.geometry().y() + (current_screen.geometry().height() - self.size().height()) // 2
                 )
             )
         )
@@ -155,8 +269,6 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
         self.button_maximize.updateGeometry()
         self.button_minimize.updateGeometry()
         self.button_pin.updateGeometry()
-
-        self.grip.move(self.width() - self.grip.width(), self.height() - self.grip.height())
 
 
 class CrosshairWindow(QtWidgets.QMainWindow):
