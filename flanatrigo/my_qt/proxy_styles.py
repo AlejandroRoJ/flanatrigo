@@ -3,7 +3,7 @@ from PySide6 import QtGui, QtWidgets
 import constants
 
 
-class MyProxy(QtWidgets.QProxyStyle):
+class ColoredBarTab(QtWidgets.QProxyStyle):
     def __init__(self, default_color, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.default_color = default_color

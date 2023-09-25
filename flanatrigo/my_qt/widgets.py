@@ -5,7 +5,7 @@ from my_qt import ui_loader
 from my_qt.buttons import Switch
 from my_qt.line_edits import HotkeyLineEdit
 from my_qt.list_widgets import DeselectableListWidget
-from my_qt.proxy_styles import MyProxy
+from my_qt.proxy_styles import ColoredBarTab
 from my_qt.sliders import AgileSlider
 from my_qt.spin_boxes import NoWheelDoubleSpinBox, NoWheelSpinBox
 
@@ -122,7 +122,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.others_controller = None
 
         self.default_color = self.palette().button().color()
-        self.tab_proxy_style = MyProxy(self.default_color, 'fusion')
+        self.tab_proxy_style = ColoredBarTab(self.default_color, 'fusion')
         self.check_trigger = Switch(self.tab_trigger, track_radius=8, thumb_radius=10, os_colors=False)
         self.layout_trigger_top.insertWidget(0, self.check_trigger)
         self.check_picker = Switch(self.tab_picker, track_radius=8, thumb_radius=10, os_colors=False)
