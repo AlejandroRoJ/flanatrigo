@@ -35,8 +35,8 @@ class Config:
     afk_press_button: str = constants.AFK_PRESS_BUTTON
     afk_interval: float = constants.AFK_INTERVAL
 
-    defuser_activation_button: str = constants.DEFUSER_ACTIVATION_BUTTON
-    defuser_press_button: str = constants.DEFUSER_PRESS_BUTTON
+    defuser_activation_button: set[Button] = field(default_factory=lambda: constants.DEFUSER_ACTIVATION_BUTTON)
+    defuser_press_button: set[Button] = field(default_factory=lambda: constants.DEFUSER_PRESS_BUTTON)
     defuser_advance: float = constants.DEFUSER_ADVANCE
 
     volume: int = constants.VOLUME

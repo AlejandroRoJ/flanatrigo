@@ -1904,7 +1904,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Defusar con</string>
+            <string>Desactivar la bomba con</string>
            </property>
           </widget>
          </item>
@@ -1944,7 +1944,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Adelantar el defuse</string>
+            <string>Adelantar la desactivación de la bomba</string>
            </property>
           </widget>
          </item>
@@ -1961,7 +1961,7 @@
               <enum>Qt::NoFocus</enum>
              </property>
              <property name="maximum">
-              <number>10000</number>
+              <number>1000</number>
              </property>
              <property name="singleStep">
               <number>1</number>
@@ -1976,7 +1976,7 @@
               <enum>QSlider::TicksAbove</enum>
              </property>
              <property name="tickInterval">
-              <number>2500</number>
+              <number>250</number>
              </property>
             </widget>
            </item>
@@ -2000,7 +2000,7 @@
               <string> s</string>
              </property>
              <property name="decimals">
-              <number>4</number>
+              <number>3</number>
              </property>
              <property name="maximum">
               <double>999.000000000000000</double>
