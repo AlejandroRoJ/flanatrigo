@@ -4,6 +4,8 @@ from PySide6 import QtWidgets
 
 from models.config import Config
 from models.salvable import Salvable
+from my_qt.line_edits import HotkeyLineEdit
+from my_qt.sliders import AgileSlider
 from my_qt.spin_boxes import NoWheelDoubleSpinBox, NoWheelSpinBox
 from my_qt.widgets import CentralWidget
 
@@ -16,7 +18,7 @@ class Controller(Salvable, ABC):
     @staticmethod
     def _set_slider_spin_value(
         spin: NoWheelSpinBox | NoWheelDoubleSpinBox,
-        slider: QtWidgets.QSlider,
+        slider: AgileSlider,
         value: int | float
     ):
         spin.blockSignals(True)
@@ -31,8 +33,8 @@ class Controller(Salvable, ABC):
         slider.blockSignals(False)
         spin.blockSignals(False)
 
-    def on_line_buttons_change(self, line_edit: QtWidgets.QLineEdit):
-        setattr(self.config, line_edit.objectName()[len('line_'):], line_edit.text())
+    def on_line_buttons_change(self, line_edit: HotkeyLineEdit):
+        setattr(self.config, line_edit.objectName()[len('line_'):], line_edit.current_buttons.copy())
         self.save_config()
 
     def on_spin_change(self, spin: NoWheelSpinBox | NoWheelDoubleSpinBox, slider: QtWidgets.QSlider) -> str:

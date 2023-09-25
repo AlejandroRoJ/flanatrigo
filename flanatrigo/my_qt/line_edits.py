@@ -1,7 +1,7 @@
 import threading
 import time
 from builtins import super
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import Any
 
 import keyboard
@@ -9,6 +9,8 @@ import mouse
 from PySide6 import QtCore, QtGui, QtWidgets
 
 import constants
+from models.button import Button
+from models.enums import Device
 
 
 def _pass_function():
@@ -63,30 +65,28 @@ class HotkeyLineEdit(QtWidgets.QLineEdit):
 
     def _on_button_event(self, event: keyboard.KeyboardEvent | mouse.ButtonEvent | mouse.MoveEvent | mouse.WheelEvent):
         match event:
-            case keyboard.KeyboardEvent():
-                name = event.name
-                for spanish, english in constants.SPANISH_KEYS_TRANSLATION:
-                    name = name.replace(spanish, english)
-                name = keyboard.normalize_name(name).lower().strip()
-                if event.event_type == keyboard.KEY_DOWN:
-                    self.add_selected_button(name)
-                else:
-                    self.current_buttons.discard(name)
             case mouse.ButtonEvent():
-                button = f'mouse_{event.button}'
+                if not (button := Button.from_mouse_event(event)):
+                    return
                 if event.event_type != mouse.UP:
-                    if self.rect().contains(self.mapFromGlobal(QtGui.QCursor.pos())):
+                    if self.rect().contains(self.mapFromGlobal(self.cursor().pos())):
                         self.add_selected_button(button)
                 else:
                     self.current_buttons.discard(button)
+            case keyboard.KeyboardEvent():
+                button = Button.from_keyboard_event(event)
+                if event.event_type == keyboard.KEY_DOWN:
+                    self.add_selected_button(button)
+                else:
+                    self.current_buttons.discard(button)
 
-    def _on_selected_keyboard_press(self, button):
-        self._on_selected_press(button.name)
+    def _on_selected_keyboard_press(self, event: keyboard.KeyboardEvent):
+        self._on_selected_press(Button.from_keyboard_event(event))
 
-    def _on_selected_keyboard_release(self, button):
-        self._on_selected_release(button.name)
+    def _on_selected_keyboard_release(self, event: keyboard.KeyboardEvent):
+        self._on_selected_release(Button.from_keyboard_event(event))
 
-    def _on_selected_press(self, button):
+    def _on_selected_press(self, button: Button):
         def thread_target():
             self.selected_buttons[button] = True
             if all(self.selected_buttons.values()):
@@ -97,7 +97,7 @@ class HotkeyLineEdit(QtWidgets.QLineEdit):
             and
             self.selected_buttons[button]
             or
-            self.rect().contains(self.mapFromGlobal(QtGui.QCursor.pos()))
+            self.rect().contains(self.mapFromGlobal(self.cursor().pos()))
         ):
             return
 
@@ -151,30 +151,34 @@ class HotkeyLineEdit(QtWidgets.QLineEdit):
     def add_release_handler(self, release_handler: Callable[[], Any]):
         self.release_handler = release_handler
 
-    def add_selected_button(self, button: str):
+    def add_selected_button(self, button: Button):
         if not button or button in self.current_buttons:
             return
 
         self.current_buttons.add(button)
         self.selected_buttons = {button: False for button in self.current_buttons}
-        self.setText('+'.join(self.current_buttons))
+        self.setText(
+            '+'.join(
+                f'mouse_{button.name}' if button.device is Device.MOUSE else
+                f'numpad_{button.name}' if button.is_numpad else button.name
+                for button in self.current_buttons
+            )
+        )
         self._unhook_selected_hooks()
         for button in self.current_buttons:
-            if button.startswith('mouse'):
+            if button.device is Device.MOUSE:
                 self.selected_mouse_hooks.extend((
-                    mouse.on_button(self._on_selected_press, (button,), (button[len('mouse_'):],), (mouse.DOWN, mouse.DOUBLE)),
-                    mouse.on_button(self._on_selected_release, (button,), (button[len('mouse_'):],), (mouse.UP,))
+                    mouse.on_button(self._on_selected_press, (button,), (button.name,), (mouse.DOWN, mouse.DOUBLE)),
+                    mouse.on_button(self._on_selected_release, (button,), (button.name,), (mouse.UP,))
                 ))
             else:
                 self.selected_keyboard_hooks.extend((
-                    keyboard.on_press_key(button, self._on_selected_keyboard_press),
-                    keyboard.on_release_key(button, self._on_selected_keyboard_release)
+                    keyboard.on_press_key(button.scan_code, self._on_selected_keyboard_press),
+                    keyboard.on_release_key(button.scan_code, self._on_selected_keyboard_release)
                 ))
 
-    def add_selected_buttons(self, buttons: str):
-        self.setText(buttons)
-
-        for button in buttons.split('+'):
+    def add_selected_buttons(self, buttons: Iterable[Button]):
+        for button in buttons:
             self.add_selected_button(button)
 
         self.current_buttons.clear()

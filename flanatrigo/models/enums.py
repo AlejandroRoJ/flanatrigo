@@ -1,6 +1,11 @@
 from enum import Enum, auto
 
 
+class Device(Enum):
+    KEYBOARD = auto()
+    MOUSE = auto()
+
+
 class PickerState(Enum):
     MENU = auto()
     PICK = auto()

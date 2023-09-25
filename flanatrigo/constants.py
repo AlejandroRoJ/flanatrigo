@@ -1,10 +1,13 @@
 import pathlib
 
+from models.button import Button
+from models.enums import Device
+
 # Trigger defaults
 TRIGGER_STATE = False
 TRIGGER_BACKEND = 0
-TRIGGER_ACTIVATION_BUTTON = 'mouse_x2'
-TRIGGER_MODE_BUTTON = 'alt gr'
+TRIGGER_ACTIVATION_BUTTON = {Button(None, 'x2', Device.MOUSE)}
+TRIGGER_MODE_BUTTON = {Button(541, 'alt gr', Device.KEYBOARD, is_numpad=False)}
 DETECTOR_ALWAYS_VISIBLE = False
 DETECTOR_SIZE = 4
 DETECTOR_HORIZONTAL = 0
@@ -18,7 +21,7 @@ RAGE_TOLERANCE = 20
 
 # Instapicker defaults
 PICKER_STATE = False
-PICKER_ACTIVATION_BUTTON = 'f9'
+PICKER_ACTIVATION_BUTTON = {Button(67, 'f9', Device.KEYBOARD, is_numpad=False)}
 PICKER_DELAY = 0
 PICKER_DURATION = 0
 PICKER_STEPS = 120
@@ -26,8 +29,8 @@ PICKER_CURRENT_AGENT = None
 
 # Autoafk defaults
 AFK_STATE = False
-AFK_ACTIVATION_BUTTON = 'f10'
-AFK_PRESS_BUTTON = 'tab'
+AFK_ACTIVATION_BUTTON = {Button(68, 'f10', Device.KEYBOARD, is_numpad=False)}
+AFK_PRESS_BUTTON = {Button(15, 'tab', Device.KEYBOARD, is_numpad=False)}
 AFK_INTERVAL = 0.2
 
 # Autodefuser defaults
@@ -40,7 +43,7 @@ DEFUSER_ADVANCE = 0.065
 VOLUME = 50
 TEST_MODE = 0
 LOGS_STATE = False
-LOGS_MARK_BUTTON = 'f8'
+LOGS_MARK_BUTTON = {Button(66, 'f8', Device.KEYBOARD, is_numpad=False)}
 VERSION = 'v1.3.0'
 
 # Logs
@@ -90,6 +93,7 @@ DEFUSER_COLORS = ((119, 20, 0), (163, 27, 0))
 DEFUSER_COLOR_TOLERANCE = 5
 DEFUSER_REGION_FACTORS = (0.50208, 0.06111, 0.50625, 0.06667)
 DOUBLE_BUTTON_WAITING_SECONDS = 0.3
+KEYBOARD_SHIFT_SCAN_CODES = [42, 54]
 LOG_FILE_SIZE = 20_000
 LOGS_FILES = 3
 LOGGER_NAME = 'trigger'
@@ -102,11 +106,5 @@ RECLICK_WAITING_SECONDS = 2
 RESIZE_AREA_CORNER_FACTOR = 2
 RESIZE_AREA_SIZE = 7
 SCREEN_SIZE = (1920, 1080)
-SPANISH_KEYS_TRANSLATION = (
-    ('mayusculas', 'shift'), ('flecha', ''), ('arriba', 'up'), ('abajo', 'down'), ('izquierda', 'left'),
-    ('derecha', 'right'), ('bloq mayus', 'caps lock'), ('supr', 'del'), ('inicio', 'home'), ('fin', 'end'),
-    ('imp pant', 'print screen'), ('bloq despl', 'scroll lock'), ('pausa', 'pause'), ('re pag', 'page up'),
-    ('av pag', 'page down'), ('aplicación', 'menu')
-)
 TAB = 0
 TITLE_BAR_HEIGHT = 35

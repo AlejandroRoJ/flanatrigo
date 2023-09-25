@@ -76,7 +76,12 @@ class TriggerController(Loggable, Queueable, Controller):
             return
 
         try:
-            if event.name in self.config.trigger_activation_button.split('+') + ['mayusculas', 'shift']:
+            if (
+                event.scan_code in
+                [button.scan_code for button in self.config.trigger_activation_button]
+                +
+                constants.KEYBOARD_SHIFT_SCAN_CODES
+            ):
                 return
         except AttributeError:
             pass
