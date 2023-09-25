@@ -5,6 +5,7 @@ from my_qt import ui_loader
 from my_qt.buttons import Switch
 from my_qt.line_edits import HotkeyLineEdit
 from my_qt.list_widgets import DeselectableListWidget
+from my_qt.proxy_styles import MyProxy
 from my_qt.sliders import AgileSlider
 from my_qt.spin_boxes import NoWheelDoubleSpinBox, NoWheelSpinBox
 
@@ -120,6 +121,8 @@ class CentralWidget(QtWidgets.QWidget):
         self.defuser_controller = None
         self.others_controller = None
 
+        self.default_color = self.palette().button().color()
+        self.tab_proxy_style = MyProxy(self.default_color, 'fusion')
         self.check_trigger = Switch(self.tab_trigger, track_radius=8, thumb_radius=10, os_colors=False)
         self.layout_trigger_top.insertWidget(0, self.check_trigger)
         self.check_picker = Switch(self.tab_picker, track_radius=8, thumb_radius=10, os_colors=False)
@@ -136,6 +139,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.group_logs.layout().insertWidget(1, self.line_logs)
         self.group_logs.layout().setStretch(2, 1)
 
+        self.tab.tabBar().setStyle(self.tab_proxy_style)
         palette = self.scroll.palette()
         palette.setBrush(QtGui.QPalette.ColorRole.Window, QtGui.QBrush(QtCore.Qt.NoBrush))
         self.scroll.setPalette(palette)
@@ -158,6 +162,8 @@ class CentralWidget(QtWidgets.QWidget):
         self.afk_controller = args[2]
         self.defuser_controller = args[3]
         self.others_controller = args[4]
+
+        self.tab_proxy_style.controller = self.trigger_controller
 
         self.line_hexadecimal.textChanged.connect(self.trigger_controller.on_line_hexadecimal_change)
         self.line_trigger_activation_button.add_handlers(self.trigger_controller.on_activation_press, self.trigger_controller.on_activation_release, self.trigger_controller.on_double_press_activation)
@@ -225,6 +231,8 @@ class CentralWidget(QtWidgets.QWidget):
         self.spin_volume.valueChanged.connect(self.trigger_controller.on_spin_volume_change)
 
         self.list_agents.currentItemChanged.connect(self.picker_controller.on_item_select)
+
+        self.tab.currentChanged.connect(self.trigger_controller.update_rage_theme)
 
     @staticmethod
     def _slider_to_spin(slider: QtWidgets.QSlider, spin: NoWheelSpinBox | NoWheelDoubleSpinBox):

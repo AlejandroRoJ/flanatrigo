@@ -25,7 +25,6 @@ class TriggerController(Loggable, CSController):
         self.activation_locked = False
         self.activated_player = None
         self.deactivated_player = None
-        self.default_color = self.gui.palette().button().color()
         self.timer_crosshair_window = QtCore.QTimer()
         self.timer_crosshair_window.setSingleShot(True)
         self.trigger_timer = None
@@ -210,14 +209,6 @@ class TriggerController(Loggable, CSController):
             self.rage_keyboard_hook = keyboard.hook(self._on_device_event)
             self.rage_mouse_hook = mouse.hook(self._on_device_event)
 
-    def _update_rage_theme(self):
-        palette = self.gui.palette()
-        if self.config.rage_mode:
-            palette.setColor(palette.ColorRole.Button, QtGui.QColor.fromRgb(*constants.RAGE_COLOR))
-        else:
-            palette.setColor(palette.ColorRole.Button, self.default_color)
-        self.gui.setPalette(palette)
-
     def close(self):
         self._stop_trigger()
         AutoHotkeyInterface.close()
@@ -277,7 +268,7 @@ class TriggerController(Loggable, CSController):
         self.set_color(*self.config.color)
         self.gui.spin_tolerance.setValue(self.config.tolerance)
         self._set_slider_spin_value(self.gui.spin_cadence, self.gui.slider_cadence, self.config.cadence)
-        self._update_rage_theme()
+        self.update_rage_theme()
         self._update_hooks()
         self._set_slider_spin_value(
             self.gui.spin_rage_immobility,
@@ -305,7 +296,7 @@ class TriggerController(Loggable, CSController):
             self._stop_trigger()
             self._start_trigger()
 
-        self._update_rage_theme()
+        self.update_rage_theme()
         self._update_hooks()
 
     def on_check_detector_change(self, state: int):
@@ -342,7 +333,7 @@ class TriggerController(Loggable, CSController):
         self.config.rage_mode = False
         self.save_config()
         AutoHotkeyInterface.close()
-        self._update_rage_theme()
+        self.update_rage_theme()
         self._update_hooks()
 
     def on_double_press_activation(self):
@@ -450,3 +441,12 @@ class TriggerController(Loggable, CSController):
             AutoHotkeyInterface.restart()
             if self.gui.check_trigger.isChecked():
                 AutoHotkeyInterface.start()
+
+    def update_rage_theme(self):
+        palette = self.gui.palette()
+        if self.config.rage_mode and self.gui.tab.currentIndex() == 0:
+            palette.setColor(palette.ColorRole.Button, QtGui.QColor.fromRgb(*constants.RAGE_COLOR))
+        else:
+            palette.setColor(palette.ColorRole.Button, self.gui.default_color)
+            self.gui.tab.update()
+        self.gui.tab.setPalette(palette)
