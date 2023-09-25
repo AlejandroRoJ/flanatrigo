@@ -1,3 +1,4 @@
+altgraph==0.17.4
 cffi==1.15.1
 clr-loader==0.2.6
 EasyProcess==1.1
@@ -9,10 +10,13 @@ mss==9.0.1
 numpy==1.26.0
 opencv-python==4.8.0.76
 packaging==23.1
+pefile==2023.2.7
 Pillow==10.0.1
 PyAutoGUI==0.9.54
 pycparser==2.21
 PyGetWindow==0.0.9
+pyinstaller==6.0.0
+pyinstaller-hooks-contrib==2023.8
 PyMsgBox==1.0.9
 pyperclip==1.8.2
 PyRect==0.2.0
@@ -24,4 +28,5 @@ PySide6-Essentials==6.5.2
 pytesseract==0.3.10
 pythonnet==3.0.2
 pytweening==1.0.7
+pywin32-ctypes==0.2.2
 shiboken6==6.5.2
