@@ -26,9 +26,6 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
 
         self.button_close = TitleButton(constants.CLOSE_PATH, self, 1, top_margin=3, right_margin=3)
         self.button_close.setStyleSheet('QPushButton:hover{background-color: darkred}')
-        self.button_maximize = TitleButton(constants.MAXIMIZE_PATH, self, 2)
-        self.button_minimize = TitleButton(constants.MINIMIZE_PATH, self, 3)
-        self.button_pin = TitleButton(constants.PIN_PATH, self, 4, icon_size=(12, 12), checkable=True)
 
         self.grip = QtWidgets.QSizeGrip(self)
         self.grip.setFixedSize(20, 20)
