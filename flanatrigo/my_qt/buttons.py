@@ -14,13 +14,17 @@ class TitleButton(QtWidgets.QPushButton):
         parent: QtWidgets.QWidget,
         index: int,
         size=(constants.TITLE_BAR_HEIGHT, constants.TITLE_BAR_HEIGHT),
+        top_margin=0,
+        right_margin=0,
         icon_size=(16, 16),
         checkable=False
     ):
         super().__init__(icon=QtGui.QIcon(str(icon_path)), parent=parent)
         self.parent = parent
         self.index = index
-        self.size = size
+        self.size = (size[0] - top_margin * 2, size[1] - top_margin * 2)
+        self.top_margin = top_margin
+        self.right_margin = right_margin
 
         self.setFlat(True)
         self.setIconSize(QtCore.QSize(*icon_size))
@@ -32,7 +36,15 @@ class TitleButton(QtWidgets.QPushButton):
         self.updateGeometry()
 
     def connect_signals(self):
-        self.signal_resize.connect(lambda: self.setGeometry(self.parent.width() - self.size[0] * self.index, 0, self.size[0], self.size[1]), QtCore.Qt.QueuedConnection)
+        self.signal_resize.connect(
+            lambda: self.setGeometry(
+                self.parent.width() - self.size[0] * self.index - self.right_margin,
+                self.top_margin,
+                self.size[0],
+                self.size[1]
+            ),
+            QtCore.Qt.QueuedConnection
+        )
 
     def enterEvent(self, event: QtGui.QEnterEvent):
         self.setFlat(False)

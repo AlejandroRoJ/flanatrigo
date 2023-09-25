@@ -24,7 +24,7 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
         self.central_widget = CentralWidget(self)
         self.setCentralWidget(self.central_widget)
 
-        self.button_close = TitleButton(constants.CLOSE_PATH, self, 1)
+        self.button_close = TitleButton(constants.CLOSE_PATH, self, 1, top_margin=3, right_margin=3)
         self.button_close.setStyleSheet('QPushButton:hover{background-color: darkred}')
         self.button_maximize = TitleButton(constants.MAXIMIZE_PATH, self, 2)
         self.button_minimize = TitleButton(constants.MINIMIZE_PATH, self, 3)
@@ -32,6 +32,9 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
 
         self.grip = QtWidgets.QSizeGrip(self)
         self.grip.setFixedSize(20, 20)
+        self.button_maximize = TitleButton(constants.MAXIMIZE_PATH, self, 2, top_margin=3)
+        self.button_minimize = TitleButton(constants.MINIMIZE_PATH, self, 3, top_margin=3)
+        self.button_pin = TitleButton(constants.PIN_PATH, self, 4, icon_size=(12, 12), top_margin=3, checkable=True)
 
         self.resize(self.sizeHint())
         self.move_to_center()
