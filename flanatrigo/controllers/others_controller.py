@@ -36,7 +36,7 @@ class OthersController(Loggable, CSController):
     def on_combo_test_mode_change(self, index: int):
         self.config.test_mode = index
         self.save_config()
-        self._send_trigger_attribute('test_mode', index)
+        self._send_cs_attribute('test_mode', index)
         AutoHotkeyInterface.close()
         AutoHotkeyInterface.test_mode = index
         if self.gui.check_trigger.isChecked():

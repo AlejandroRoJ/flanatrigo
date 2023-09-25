@@ -10,7 +10,7 @@ import constants
 from controllers.cs_controller import CSController
 from models.autohotkey_interface import AutoHotkeyInterface
 from models.loggable import Loggable
-from models.queueable import Queueable
+from my_qt.sliders import AgileSlider
 from my_qt.spin_boxes import NoWheelDoubleSpinBox, NoWheelSpinBox
 from my_qt.windows import CrosshairWindow
 
@@ -103,7 +103,7 @@ class TriggerController(Loggable, CSController):
         if self.rage_state:
             return
 
-        self._send_trigger_attribute('rage_mode', True)
+        self._send_cs_attribute('rage_mode', True)
         self.rage_state = True
         self._log()
 
@@ -116,7 +116,7 @@ class TriggerController(Loggable, CSController):
 
         match self.config.trigger_backend:
             case 0:
-                self._send_trigger_attribute('trigger', True)
+                self._send_cs_attribute('trigger', True)
             case 1:
                 AutoHotkeyInterface.start()
             case _:
@@ -128,7 +128,7 @@ class TriggerController(Loggable, CSController):
         if not self.rage_state:
             return
 
-        self._send_trigger_attribute('rage_mode', False)
+        self._send_cs_attribute('rage_mode', False)
         self.rage_state = False
         self._log()
 
@@ -138,7 +138,7 @@ class TriggerController(Loggable, CSController):
 
         match self.config.trigger_backend:
             case 0:
-                self._send_trigger_attribute('trigger', False)
+                self._send_cs_attribute('trigger', False)
             case 1:
                 AutoHotkeyInterface.stop()
             case _:
@@ -231,15 +231,15 @@ class TriggerController(Loggable, CSController):
         self.config.load()
 
         screen_size = QtWidgets.QApplication.primaryScreen().size()
-        self._send_trigger_attribute('screen_size', (screen_size.width(), screen_size.height()))
-        self._send_trigger_attribute('detector_size', self.config.detector_size)
-        self._send_trigger_attribute('detector_horizontal', self.config.detector_horizontal)
-        self._send_trigger_attribute('color', self.config.color)
-        self._send_trigger_attribute('rage_mode', self.config.rage_mode)
-        self._send_trigger_attribute('rage_immobility', self.config.rage_immobility)
-        self._send_trigger_attribute('tolerance', self.config.tolerance)
-        self._send_trigger_attribute('rage_tolerance', self.config.rage_tolerance)
-        self._send_trigger_attribute('test_mode', self.config.test_mode)
+        self._send_cs_attribute('screen_size', (screen_size.width(), screen_size.height()))
+        self._send_cs_attribute('detector_size', self.config.detector_size)
+        self._send_cs_attribute('detector_horizontal', self.config.detector_horizontal)
+        self._send_cs_attribute('detector_vertical', self.config.detector_vertical)
+        self._send_cs_attribute('color', self.config.color)
+        self._send_cs_attribute('tolerance', self.config.tolerance)
+        self._send_cs_attribute('rage_immobility', self.config.rage_immobility)
+        self._send_cs_attribute('rage_tolerance', self.config.rage_tolerance)
+        self._send_cs_attribute('test_mode', self.config.test_mode)
         AutoHotkeyInterface.screen_size = (screen_size.width(), screen_size.height())
         AutoHotkeyInterface.detector_size = self.config.detector_size
         AutoHotkeyInterface.detector_horizontal = self.config.detector_horizontal
@@ -367,10 +367,9 @@ class TriggerController(Loggable, CSController):
     def on_spin_change(
         self,
         spin: NoWheelSpinBox | NoWheelDoubleSpinBox,
-        slider: QtWidgets.QSlider
+        slider: AgileSlider
     ) -> str:
         attribute_name = super().on_spin_change(spin, slider)
-        self._send_trigger_attribute(attribute_name, spin.value())
         setattr(AutoHotkeyInterface, attribute_name, spin.value())
         AutoHotkeyInterface.update_region()
         if self.config.trigger_backend == 1:
@@ -445,7 +444,7 @@ class TriggerController(Loggable, CSController):
 
         self.config.color = (red, green, blue)
         self.save_config()
-        self._send_trigger_attribute('color', self.config.color)
+        self._send_cs_attribute('color', self.config.color)
         AutoHotkeyInterface.color = self.config.color
         if self.config.trigger_backend == 1:
             AutoHotkeyInterface.restart()
