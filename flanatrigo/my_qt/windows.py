@@ -260,7 +260,7 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
         self.show()
 
     def sizeHint(self):
-        return QtCore.QSize(510, 600)
+        return QtCore.QSize(600, 600)
 
     def updateGeometry(self):
         super().updateGeometry()
