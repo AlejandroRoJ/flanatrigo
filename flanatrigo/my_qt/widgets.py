@@ -251,6 +251,7 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
 
     def close(self) -> bool:
         self.trigger_controller.close()
+        self.others_controller.close()
         return super().close()
 
     def set_rage_theme(self, state: bool):
