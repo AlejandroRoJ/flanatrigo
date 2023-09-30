@@ -130,7 +130,6 @@ TAB = 0
 TITLE_BAR_HEIGHT = 35
 EXE_PATH = SUB_APP_PATH / f'{APP_NAME}.exe'
 MAIN_PATH = PYTHON_SOURCE_PATH / 'main.py'
-VENV_ACTIVATE_PATH = PYTHON_SOURCE_PATH / 'venv/Scripts/activate'
 
 # Updater app
 UPDATER_APP_NAME = 'Updater'
