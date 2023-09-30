@@ -1,3 +1,5 @@
+from typing import Generic, TypeVar
+
 from PySide6 import QtCore, QtGui, QtWidgets
 
 import constants
@@ -6,16 +8,108 @@ from models.enums import WindowBorder
 from models.salvable import Salvable
 from my_qt.bases import MixinMeta
 from my_qt.buttons import TitleButton
-from my_qt.widgets import CentralWidget
+from my_qt.widgets import FlanaTrigoCentralWidget, UpdaterCentralWidget
 
 
-class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
-    def __init__(self, config: Config):
-        super().__init__(config)
+class CrosshairWindow(QtWidgets.QMainWindow):
+    def __init__(self, color=(255, 0, 0), size=3, horizontal_offset=0, vertical_offset=0, screen_index=0):
+        super().__init__()
+        self.color = color
+        self.screen_index = screen_index
+        self.size = size
+        self.horizontal_offset = horizontal_offset
+        self.vertical_offset = vertical_offset
+
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.setAttribute(QtCore.Qt.WA_ShowWithoutActivating)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowTransparentForInput | QtCore.Qt.WindowStaysOnTopHint)
+        self.show()
+
+    def paintEvent(self, event: QtGui.QPaintEvent):
+        painter = QtGui.QPainter(self)
+        pen = QtGui.QPen(
+            QtCore.Qt.BrushStyle.SolidPattern,
+            constants.CROSSHAIR_PEN_WIDTH,
+            QtCore.Qt.PenStyle.SolidLine,
+            QtCore.Qt.PenCapStyle.SquareCap,
+            QtCore.Qt.PenJoinStyle.MiterJoin
+        )
+        pen.setColor(QtGui.QColor.fromRgb(*self.color))
+        pen.setWidth(constants.CROSSHAIR_PEN_WIDTH)
+        painter.setPen(pen)
+        painter.drawRect(
+            (self.width() - self.size - constants.CROSSHAIR_PEN_WIDTH) // 2 + self.horizontal_offset,
+            (self.height() - self.size - constants.CROSSHAIR_PEN_WIDTH) // 2 - self.vertical_offset,
+            self.size + constants.CROSSHAIR_PEN_WIDTH,
+            self.size + constants.CROSSHAIR_PEN_WIDTH
+        )
+
+    @property
+    def screen_index(self) -> int:
+        return QtWidgets.QApplication.screens().index(self.screen())
+
+    @screen_index.setter
+    def screen_index(self, index: int):
+        self.setGeometry(QtWidgets.QApplication.screens()[index].geometry())
+
+
+T = TypeVar('T')
+
+
+class WindowBase(QtWidgets.QMainWindow, Generic[T], metaclass=MixinMeta):
+    def __init__(self, icon_path: str, central_widget: T):
+        super().__init__()
+        self.icon = QtGui.QIcon(icon_path)
+        self.setWindowTitle(constants.APP_NAME)
+        self.setWindowIcon(self.icon)
+
+        self.central_widget = central_widget
+        self.setCentralWidget(self.central_widget)
+
+
+class MovableWindow(WindowBase[T]):
+    def __init__(self, *arg, **kwargs):
+        super().__init__(*arg, **kwargs)
         self.last_position: QtCore.QPoint | None = None
+        self.is_moving = False
+
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+
+    def _move(self):
+        self.move(self.pos() + self.mapFromGlobal(self.cursor().pos()) - self.last_position)
+
+    def _on_mouse_left_press(self, event: QtGui.QMouseEvent):
+        self.last_position = event.pos()
+
+    def _on_mouse_move(self, event: QtGui.QMouseEvent):
+        self._move()
+
+    def mouseMoveEvent(self, event: QtGui.QMouseEvent):
+        super().mouseMoveEvent(event)
+        if self.last_position is None:
+            return
+
+        self.is_moving = True
+        self._on_mouse_move(event)
+
+    def mousePressEvent(self, event: QtGui.QMouseEvent):
+        super().mousePressEvent(event)
+        self.setFocus()
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
+            self._on_mouse_left_press(event)
+
+    def mouseReleaseEvent(self, event: QtGui.QMouseEvent):
+        super().mouseReleaseEvent(event)
+        self.is_moving = False
+        self.last_position = None
+
+
+class FlanaTrigoWindow(Salvable, MovableWindow[FlanaTrigoCentralWidget]):
+    def __init__(self, config: Config):
+        super().__init__(config, str(constants.LOGO_PATH), FlanaTrigoCentralWidget(self))
         self.last_width = None
         self.was_maximized = False
-        self.is_moving = False
         self.current_border: WindowBorder | None = None
         self.grabbed_border: WindowBorder | None = None
 
@@ -33,7 +127,6 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
         self.button_minimize = TitleButton(constants.MINIMIZE_PATH, self, 3, top_margin=3)
         self.button_pin = TitleButton(constants.PIN_PATH, self, 4, icon_size=(12, 12), top_margin=3, checkable=True)
 
-        self.resize(self.sizeHint())
         self.move_to_center()
         self.show()
 
@@ -46,20 +139,6 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
         self.button_pin.toggled.connect(self._on_pin_changed)
 
         self.central_widget.tab.currentChanged.connect(self._on_tab_changed)
-
-    def _drag(self):
-        if self.last_position.y() > constants.TITLE_BAR_HEIGHT:
-            return
-
-        if self.isMaximized():
-            self.maximize()
-            self.was_maximized = True
-            horizontal_offset = self.last_width // 2
-            vertical_offset = constants.TITLE_BAR_HEIGHT // 2
-            self.move(self.cursor().pos().x() - horizontal_offset, self.cursor().pos().y() - vertical_offset)
-            self.last_position = QtCore.QPoint(horizontal_offset, vertical_offset)
-        else:
-            self.move(self.pos() + self.mapFromGlobal(self.cursor().pos()) - self.last_position)
 
     def _get_current_border(self, position: QtCore.QPoint) -> WindowBorder | None:
         if self.isMaximized():
@@ -96,6 +175,30 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
             return WindowBorder.TOP
         elif self.height() - constants.RESIZE_AREA_SIZE <= position.y():
             return WindowBorder.BOTTOM
+
+    def _move(self):
+        if self.last_position.y() > constants.TITLE_BAR_HEIGHT:
+            return
+
+        if self.isMaximized():
+            self.maximize()
+            self.was_maximized = True
+            horizontal_offset = self.last_width // 2
+            vertical_offset = constants.TITLE_BAR_HEIGHT // 2
+            self.move(self.cursor().pos().x() - horizontal_offset, self.cursor().pos().y() - vertical_offset)
+            self.last_position = QtCore.QPoint(horizontal_offset, vertical_offset)
+        else:
+            super()._move()
+
+    def _on_mouse_left_press(self, event: QtGui.QMouseEvent):
+        super()._on_mouse_left_press(event)
+        self.grabbed_border = self.current_border
+
+    def _on_mouse_move(self, event: QtGui.QMouseEvent):
+        if self.grabbed_border:
+            self._resize()
+        else:
+            super()._on_mouse_move(event)
 
     def _on_pin_changed(self, state: bool):
         self.set_on_top(state)
@@ -173,7 +276,6 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
     def load_config(self):
         self.config.load()
 
-        self.resize(self.sizeHint())
         self.button_pin.setChecked(self.config.pinned)
         self.central_widget.tab.setCurrentIndex(self.config.tab)
 
@@ -202,29 +304,11 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
             self.grabbed_border = None
             self.maximize()
 
-    def mouseMoveEvent(self, event: QtGui.QMouseEvent):
-        super().mouseMoveEvent(event)
-        if self.last_position is None:
-            return
-
-        self.is_moving = True
-        if self.grabbed_border:
-            self._resize()
-        else:
-            self._drag()
-
-    def mousePressEvent(self, event: QtGui.QMouseEvent):
-        super().mousePressEvent(event)
-        self.setFocus()
-        if event.button() == QtCore.Qt.MouseButton.LeftButton:
-            self.last_position = event.pos()
-            self.grabbed_border = self.current_border
-
     def mouseReleaseEvent(self, event: QtGui.QMouseEvent):
-        super().mouseReleaseEvent(event)
         cursor_pos = self.cursor().pos()
         current_screen = QtWidgets.QApplication.screenAt(cursor_pos)
         current_screen_top = QtWidgets.QApplication.primaryScreen().size().height() - current_screen.size().height()
+
         if self.is_moving:
             if not self.was_maximized and cursor_pos.y() <= current_screen_top + constants.TITLE_BAR_HEIGHT // 2:
                 self.move(
@@ -234,9 +318,9 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
                 self.maximize()
             else:
                 self.was_maximized = False
-            self.is_moving = False
-        self.last_position = None
+
         self.grabbed_border = None
+        super().mouseReleaseEvent(event)
 
     def move_to_center(self):
         current_screen = QtWidgets.QApplication.screenAt(self.cursor().pos())
@@ -254,9 +338,7 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
         self.updateGeometry()
 
     def set_on_top(self, activate: bool):
-        size = self.size()
         self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint, activate)
-        self.resize(size)
         self.show()
 
     def sizeHint(self):
@@ -271,44 +353,24 @@ class MainWindow(Salvable, QtWidgets.QMainWindow, metaclass=MixinMeta):
         self.button_pin.updateGeometry()
 
 
-class CrosshairWindow(QtWidgets.QMainWindow):
-    def __init__(self, color=(255, 0, 0), size=3, horizontal_offset=0, vertical_offset=0, screen_index=0):
-        super().__init__()
-        self.color = color
-        self.screen_index = screen_index
-        self.size = size
-        self.horizontal_offset = horizontal_offset
-        self.vertical_offset = vertical_offset
+class UpdaterWindow(MovableWindow[UpdaterCentralWidget]):
+    def __init__(self):
+        super().__init__(str(constants.LOGO_PATH), UpdaterCentralWidget(self))
 
-        self.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        self.setAttribute(QtCore.Qt.WA_ShowWithoutActivating)
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowTransparentForInput | QtCore.Qt.WindowStaysOnTopHint)
+        self.button_close = TitleButton(constants.CLOSE_PATH, self, index=0)
+        self.button_close.setStyleSheet('QPushButton:hover{background-color: darkred}')
+        self.button_close.clicked.connect(self.close)
+
         self.show()
 
-    def paintEvent(self, event: QtGui.QPaintEvent):
-        painter = QtGui.QPainter(self)
-        pen = QtGui.QPen(
-            QtCore.Qt.BrushStyle.SolidPattern,
-            constants.CROSSHAIR_PEN_WIDTH,
-            QtCore.Qt.PenStyle.SolidLine,
-            QtCore.Qt.PenCapStyle.SquareCap,
-            QtCore.Qt.PenJoinStyle.MiterJoin
-        )
-        pen.setColor(QtGui.QColor.fromRgb(*self.color))
-        pen.setWidth(constants.CROSSHAIR_PEN_WIDTH)
-        painter.setPen(pen)
-        painter.drawRect(
-            (self.width() - self.size - constants.CROSSHAIR_PEN_WIDTH) // 2 + self.horizontal_offset,
-            (self.height() - self.size - constants.CROSSHAIR_PEN_WIDTH) // 2 - self.vertical_offset,
-            self.size + constants.CROSSHAIR_PEN_WIDTH,
-            self.size + constants.CROSSHAIR_PEN_WIDTH
-        )
+    def resizeEvent(self, event: QtGui.QResizeEvent):
+        super().resizeEvent(event)
+        self.updateGeometry()
 
-    @property
-    def screen_index(self) -> int:
-        return QtWidgets.QApplication.screens().index(self.screen())
+    def sizeHint(self):
+        return QtCore.QSize(300, 150)
 
-    @screen_index.setter
-    def screen_index(self, index: int):
-        self.setGeometry(QtWidgets.QApplication.screens()[index].geometry())
+    def updateGeometry(self):
+        super().updateGeometry()
+
+        self.button_close.updateGeometry()

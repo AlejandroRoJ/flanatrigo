@@ -12,6 +12,13 @@ class PickerState(Enum):
     GAME = auto()
 
 
+class UpdatesState(Enum):
+    UNKNOW = auto()
+    SEARCHING = auto()
+    OUTDATED = auto()
+    UPDATED = auto()
+
+
 class WindowBorder(Enum):
     LEFT = auto()
     RIGHT = auto()

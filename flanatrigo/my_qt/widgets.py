@@ -1,6 +1,7 @@
 from PySide6 import QtCore, QtGui, QtWidgets
 
 import constants
+from models.enums import UpdatesState
 from my_qt import ui_loader
 from my_qt.buttons import Switch
 from my_qt.line_edits import HotkeyLineEdit
@@ -10,7 +11,7 @@ from my_qt.sliders import AgileSlider
 from my_qt.spin_boxes import NoWheelDoubleSpinBox, NoWheelSpinBox
 
 
-class CentralWidget(QtWidgets.QWidget):
+class FlanaTrigoCentralWidget(QtWidgets.QWidget):
     label_trigger_activation_button: QtWidgets.QLabel
     label_trigger_mode_button: QtWidgets.QLabel
     label_detector_size: QtWidgets.QLabel
@@ -56,8 +57,10 @@ class CentralWidget(QtWidgets.QWidget):
     button_color: QtWidgets.QPushButton
     button_restore_config: QtWidgets.QPushButton
     button_clear_logs: QtWidgets.QPushButton
+    button_updates: QtWidgets.QPushButton
 
     check_detector: QtWidgets.QCheckBox
+    check_updates: QtWidgets.QCheckBox
 
     slider_detector_size: AgileSlider
     slider_detector_horizontal: AgileSlider
@@ -107,10 +110,12 @@ class CentralWidget(QtWidgets.QWidget):
 
     layout_trigger_top: QtWidgets.QVBoxLayout
 
+    updates_theme_signal = QtCore.Signal(UpdatesState)
+
     def __init__(self, parent):
         super().__init__(parent)
         ui_loader.load_ui(
-            constants.UI_PATH,
+            str(constants.UI_PATH),
             self,
             [AgileSlider, DeselectableListWidget, HotkeyLineEdit, NoWheelSpinBox, NoWheelDoubleSpinBox, Switch]
         )
@@ -187,6 +192,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.button_color.clicked.connect(self.trigger_controller.open_color_dialog)
         self.button_restore_config.clicked.connect(self.others_controller.restore_config)
         self.button_clear_logs.clicked.connect(self.others_controller.on_clear_logs)
+        self.button_updates.clicked.connect(self.others_controller.on_updates)
 
         self.check_trigger.clicked.connect(self.trigger_controller.on_check_trigger_change)
         self.check_detector.stateChanged.connect(self.trigger_controller.on_check_detector_change)
@@ -194,6 +200,7 @@ class CentralWidget(QtWidgets.QWidget):
         self.check_afk.toggled.connect(self.afk_controller.on_check_afk_change)
         self.check_defuser.toggled.connect(self.defuser_controller.on_check_defuser_change)
         self.check_logs.toggled.connect(self.others_controller.on_check_logs_change)
+        self.check_updates.toggled.connect(self.others_controller.on_check_updates_change)
 
         self.slider_detector_size.valueChanged.connect(lambda: self._slider_to_spin(self.slider_detector_size, self.spin_detector_size))
         self.slider_detector_horizontal.valueChanged.connect(lambda: self._slider_to_spin(self.slider_detector_horizontal, self.spin_detector_horizontal))
@@ -232,7 +239,9 @@ class CentralWidget(QtWidgets.QWidget):
 
         self.list_agents.currentItemChanged.connect(self.picker_controller.on_item_select)
 
-        self.tab.currentChanged.connect(self.trigger_controller.update_rage_theme)
+        self.tab.currentChanged.connect(lambda: self.set_rage_theme(self.trigger_controller.config.rage_mode))
+
+        self.updates_theme_signal.connect(self.set_updates_theme)
 
     @staticmethod
     def _slider_to_spin(slider: QtWidgets.QSlider, spin: NoWheelSpinBox | NoWheelDoubleSpinBox):
@@ -243,3 +252,44 @@ class CentralWidget(QtWidgets.QWidget):
     def close(self) -> bool:
         self.trigger_controller.close()
         return super().close()
+
+
+    def set_updates_theme(self, state: UpdatesState):
+        match state:
+            case UpdatesState.UNKNOW:
+                text = ' Buscar actualizaciones'
+                image_path = constants.UPDATES_LENS_PATH
+                stylesheet = None
+            case UpdatesState.SEARCHING:
+                text = ' Buscando...'
+                image_path = constants.UPDATES_LENS_PATH
+                stylesheet = None
+            case UpdatesState.OUTDATED:
+                text = ' Descargar e instalar actualizaciones'
+                image_path = constants.UPDATES_INSTALL_PATH
+                stylesheet = 'background: rgb(120, 110, 50)'
+            case UpdatesState.UPDATED:
+                text = ' Última actualización instalada'
+                image_path = constants.UPDATES_TICK_PATH
+                stylesheet = 'background: rgb(70, 110, 70)'
+            case _:
+                return
+        self.button_updates.setText(text)
+        self.button_updates.setIcon(QtGui.QIcon(str(image_path)))
+        self.button_updates.setStyleSheet(stylesheet)
+
+
+class UpdaterCentralWidget(QtWidgets.QWidget):
+    label_state: QtWidgets.QLabel
+
+    progress: QtWidgets.QProgressBar
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        ui_loader.load_ui(str(constants.UPDATER_UI_PATH), self)
+
+    def update_progress(self, i: int):
+        self.progress.setValue(i)
+
+    def update_state(self, text: str):
+        self.label_state.setText(text)

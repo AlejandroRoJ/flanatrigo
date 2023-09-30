@@ -44,6 +44,7 @@ class Config:
     test_mode: int = constants.TEST_MODE
     logs_state: bool = constants.LOGS_STATE
     logs_mark_button: set[Button] = field(default_factory=lambda: constants.LOGS_MARK_BUTTON)
+    auto_updates: bool = constants.AUTO_UPDATES
 
     def load(self):
         try:
