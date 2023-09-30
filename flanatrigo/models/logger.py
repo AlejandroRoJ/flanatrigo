@@ -94,8 +94,8 @@ class Logger:
     @staticmethod
     def clear():
         for path in itertools.chain(
-            pathlib.Path(constants.LOGS_PATH).iterdir(),
-            pathlib.Path(constants.LOGS_IMAGES_PATH).iterdir()
+            pathlib.Path(constants.LOGS_PATH).iterdir() if constants.LOGS_IMAGES_PATH.exists() else (),
+            pathlib.Path(constants.LOGS_IMAGES_PATH).iterdir() if constants.LOGS_IMAGES_PATH.exists() else ()
         ):
             if not path.is_file():
                 continue
