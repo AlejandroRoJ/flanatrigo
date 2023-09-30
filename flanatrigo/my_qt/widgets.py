@@ -253,6 +253,14 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
         self.trigger_controller.close()
         return super().close()
 
+    def set_rage_theme(self, state: bool):
+        palette = self.palette()
+        if state and self.tab.currentIndex() == 0:
+            palette.setColor(palette.ColorRole.Button, QtGui.QColor.fromRgb(*constants.RAGE_COLOR))
+        else:
+            palette.setColor(palette.ColorRole.Button, self.default_color)
+            self.tab.update()
+        self.tab.setPalette(palette)
 
     def set_updates_theme(self, state: UpdatesState):
         match state:
