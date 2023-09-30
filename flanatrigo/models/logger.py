@@ -91,8 +91,6 @@ class Logger:
         self.logger_queue = multiprocessing.Queue()
         self._process: multiprocessing.Process | None = None
 
-        pathlib.Path(constants.LOGS_IMAGES_PATH).mkdir(parents=True, exist_ok=True)
-
     @staticmethod
     def clear():
         for path in itertools.chain(
