@@ -96,6 +96,7 @@ class TriggerController(Loggable, CSController):
         if self.is_shooting:
             self.is_shooting = False
             self._send_start_trigger()
+            self._log()
 
     def _send_start_rage(self):
         if self.rage_state:
