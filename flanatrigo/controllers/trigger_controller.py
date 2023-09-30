@@ -324,10 +324,11 @@ class TriggerController(Loggable, CSController):
         if self.gui.check_trigger.isChecked():
             self.gui.check_trigger.click()
         self.config.trigger_backend = index
-        if self.config.trigger_backend == 1 and self.gui.combo_test_mode.currentIndex() == 2:
-            self.config.test_mode = 1
-            self.gui.combo_test_mode.setCurrentIndex(1)
+        if self.config.trigger_backend == 1:
             self.gui.combo_test_mode.model().item(2).setEnabled(False)
+            if self.gui.combo_test_mode.currentIndex() == 2:
+                self.config.test_mode = 1
+                self.gui.combo_test_mode.setCurrentIndex(1)
         else:
             self.gui.combo_test_mode.model().item(2).setEnabled(True)
         self.config.rage_mode = False
