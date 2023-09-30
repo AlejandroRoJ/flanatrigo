@@ -46,7 +46,7 @@ class PickerController(SalvableController):
         try:
             # noinspection PyArgumentList
             if not (coordinates := pyautogui.locateCenterOnScreen(
-                constants.AGENTS_PICKER_PATH.format(name),
+                str(constants.AGENTS_PICKER_PATH.with_stem(name)),
                 region=self.agents_region,
                 confidence=constants.PICKER_AGENT_CONFIDENCE
             )):

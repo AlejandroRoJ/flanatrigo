@@ -8,7 +8,7 @@ from models.config import Config
 from models.logger import Logger
 from my_qt.apps import FlanaTrigoApp
 
-pytesseract.pytesseract.tesseract_cmd = constants.PYTESSERACT_PATH
+pytesseract.pytesseract.tesseract_cmd = str(constants.PYTESSERACT_PATH)
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()

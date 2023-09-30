@@ -36,7 +36,7 @@ class AutoHotkeyInterface:
         cls.close()
         cls.write_script()
         cls._process = subprocess.Popen(
-            f'{constants.AUTOHOTKEY_EXE_PATH} {constants.AUTOHOTKEY_PATH}/{constants.AUTOHOTKEY_SCRIPT_NAME}',
+            f'{constants.AUTOHOTKEY_EXE_PATH} {constants.AUTOHOTKEY_SCRIPT_PATH}',
             creationflags=subprocess.CREATE_NO_WINDOW
         )
 
@@ -100,7 +100,7 @@ class AutoHotkeyInterface:
                 }}
             }}
         '''
-        pathlib.Path(f'{constants.AUTOHOTKEY_PATH}/{constants.AUTOHOTKEY_SCRIPT_NAME}').write_text(
+        constants.AUTOHOTKEY_SCRIPT_PATH.write_text(
             inspect.cleandoc(code),
             newline='\n'
         )

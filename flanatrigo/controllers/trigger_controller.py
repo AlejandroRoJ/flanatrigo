@@ -1,4 +1,3 @@
-import pathlib
 import subprocess
 import threading
 
@@ -48,14 +47,14 @@ class TriggerController(Loggable, CSController):
             self.timer_crosshair_window.start(after)
 
     def _load_audio(self, name: str):
-        sound_path = pathlib.Path(f'{constants.SOUNDS_PATH}/{name}.wav')
+        sound_path = constants.SOUNDS_PATH / f'{name}.wav'
         if sound_path.exists():
             setattr(self, f'{name}_player', QtMultimedia.QSoundEffect())
             player = getattr(self, f'{name}_player')
             player.setSource(QtCore.QUrl.fromLocalFile(str(sound_path)))
             player.setVolume(self.config.volume / 100)
-        elif sound_path := next(pathlib.Path(constants.SOUNDS_PATH).glob(f'{name}.*'), None):
-            subprocess.run((constants.FFMPEG_PATH, '-i', str(sound_path), str(sound_path.with_suffix('.wav'))))
+        elif sound_path := next(constants.SOUNDS_PATH.glob(f'{name}.*'), None):
+            subprocess.run((str(constants.FFMPEG_PATH), '-i', str(sound_path), str(sound_path.with_suffix('.wav'))))
             self._load_audio(name)
 
     def _log(self):

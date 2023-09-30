@@ -1,7 +1,17 @@
+import os
 import pathlib
+import sys
 
 from models.button import Button
 from models.enums import Device
+
+IS_DEVELOPMENT = not getattr(sys, 'frozen', False) or not hasattr(sys, '_MEIPASS')
+
+PYTHON_SOURCE_PATH = pathlib.Path(__file__).parent.resolve()
+WORKING_DIRECTORY_PATH = PYTHON_SOURCE_PATH if IS_DEVELOPMENT else PYTHON_SOURCE_PATH.parent.parent
+if not IS_DEVELOPMENT:
+    os.chdir(WORKING_DIRECTORY_PATH)
+DIST_PATH = WORKING_DIRECTORY_PATH.parent / 'dist' if IS_DEVELOPMENT else WORKING_DIRECTORY_PATH.parent
 
 # Trigger defaults
 TRIGGER_STATE = False
@@ -45,39 +55,48 @@ TEST_MODE = 0
 LOGS_STATE = False
 LOGS_MARK_BUTTON = {Button(66, 'f8', Device.KEYBOARD, is_numpad=False)}
 VERSION = 'v1.3.0'
+AUTO_UPDATES = True
 
 # Logs
-LOGS_PATH = 'logs'
-LOGS_IMAGES_PATH = f'{LOGS_PATH}/images'
+LOGS_PATH = PYTHON_SOURCE_PATH / 'logs'
+LOGS_IMAGES_PATH = LOGS_PATH / 'images'
 LOG_FILE_STEM = 'log'
 LOG_FILE_EXTENSION = 'md'
 
 # Resources
-RESOURCES_PATH = 'resources'
-DLLS_PATH = f'{RESOURCES_PATH}/dlls'
-IMAGES_PATH = f'{RESOURCES_PATH}/images'
-SOUNDS_PATH = f'{RESOURCES_PATH}/sounds'
-AUTOHOTKEY_PATH = f'{RESOURCES_PATH}/autohotkey'
-AUTOHOTKEY_EXE_PATH = f'{AUTOHOTKEY_PATH}/AutoHotkey64.exe'
+RESOURCES_PATH = PYTHON_SOURCE_PATH / 'resources'
+DLLS_PATH = RESOURCES_PATH / 'dlls'
+IMAGES_PATH = RESOURCES_PATH / 'images'
+SOUNDS_PATH = RESOURCES_PATH / 'sounds'
+AUTOHOTKEY_PATH = RESOURCES_PATH / 'autohotkey'
+AUTOHOTKEY_EXE_PATH = AUTOHOTKEY_PATH / 'AutoHotkey64.exe'
 AUTOHOTKEY_PAUSE_NAME = 'pause.ahk'
 AUTOHOTKEY_RESUME_NAME = 'resume.ahk'
-AUTOHOTKEY_SCRIPT_NAME = 'script.ahk'
+AUTOHOTKEY_SCRIPT_PATH = AUTOHOTKEY_PATH / 'script.ahk'
 ACTIVATED_SOUND_NAME = 'activated'
-AGENTS_PICKER_PATH = f'{IMAGES_PATH}/agents/picker/{{}}.png'
-AGENTS_FULL_PATH = pathlib.Path(f'{IMAGES_PATH}/agents/full')
-CLOSE_PATH = f'{IMAGES_PATH}/close.png'
-CONFIG_PATH = pathlib.Path(f'{RESOURCES_PATH}/config.json')
-CROSS_PATH = f'{IMAGES_PATH}/cross.svg'
+AGENTS_PICKER_PATH = IMAGES_PATH / 'agents/picker/{}.png'
+AGENTS_FULL_PATH = IMAGES_PATH / 'agents/full'
+CLOSE_PATH = IMAGES_PATH / 'close.png'
+CONFIG_PATH = RESOURCES_PATH / 'config.json'
+CROSS_PNG_PATH = IMAGES_PATH / 'cross.png'
+CROSS_SVG_PATH = IMAGES_PATH / 'cross.svg'
 DEACTIVATED_SOUND_NAME = 'deactivated'
-FFMPEG_PATH = f'{RESOURCES_PATH}/ffmpeg/bin/ffmpeg.exe'
-LOGO_PATH = f'{IMAGES_PATH}/logo.png'
-MAXIMIZE_PATH = f'{IMAGES_PATH}/maximize.png'
-MINIMIZE_PATH = f'{IMAGES_PATH}/minimize.png'
-PIN_PATH = f'{IMAGES_PATH}/pin.png'
-PYTESSERACT_PATH = f'{RESOURCES_PATH}/tesseract/tesseract.exe'
-UI_PATH = f'{RESOURCES_PATH}/central_widget.ui'
+FFMPEG_PATH = RESOURCES_PATH / 'ffmpeg/bin/ffmpeg.exe'
+LOGO_PATH = IMAGES_PATH / 'logo.png'
+MAXIMIZE_PATH = IMAGES_PATH / 'maximize.png'
+MINIMIZE_PATH = IMAGES_PATH / 'minimize.png'
+PIN_PATH = IMAGES_PATH / 'pin.png'
+PYTESSERACT_PATH = RESOURCES_PATH / 'tesseract/tesseract.exe'
+UI_PATH = RESOURCES_PATH / 'flanatrigo.ui'
+UPDATER_UI_PATH = RESOURCES_PATH / 'updater.ui'
+UPDATES_INSTALL_PATH = IMAGES_PATH / 'install.png'
+UPDATES_LENS_PATH = IMAGES_PATH / 'lens.png'
+UPDATES_TICK_PATH = IMAGES_PATH / 'tick_3.png'
 
-# App
+# FlanaTrigo app
+APP_NAME = 'FlanaTrigo'
+APP_PATH = DIST_PATH / APP_NAME
+SUB_APP_PATH = APP_PATH / APP_NAME
 AGENTS_REGION_FACTORS = (0.2, 0.8, 0.74, 1)
 CLICK_DELAY = 0.02
 CONFIRM_PIEZE_COLOR = (104, 164, 167)
@@ -109,3 +128,14 @@ RESIZE_AREA_SIZE = 7
 SCREEN_SIZE = (1920, 1080)
 TAB = 0
 TITLE_BAR_HEIGHT = 35
+EXE_PATH = SUB_APP_PATH / f'{APP_NAME}.exe'
+MAIN_PATH = PYTHON_SOURCE_PATH / 'main.py'
+VENV_ACTIVATE_PATH = PYTHON_SOURCE_PATH / 'venv/Scripts/activate'
+
+# Updater app
+UPDATER_APP_NAME = 'Updater'
+UPDATER_SUB_APP_PATH = APP_PATH / UPDATER_APP_NAME
+RELEASES_API_URL = 'https://api.github.com/repos/alberlc/flanatrigo/releases'
+RELEASES_API_PARAMS = {'pe_page': 1}
+UPDATER_EXE_PATH = UPDATER_SUB_APP_PATH / f'{UPDATER_APP_NAME}.exe'
+UPDATER_MAIN_PATH = PYTHON_SOURCE_PATH / f'{UPDATER_APP_NAME.lower()}_main.py'

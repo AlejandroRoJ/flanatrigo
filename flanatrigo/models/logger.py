@@ -32,8 +32,8 @@ def _log(text: str):
 
 def _log_image(trigger_state: bool, rage_state: bool):
     formatted_date = datetime.datetime.now().strftime('%m-%d-%Y_%H-%M-%S-%f')
-    tick_image = Image.open(f'{constants.IMAGES_PATH}/tick.png')
-    cross_image = Image.open(f'{constants.IMAGES_PATH}/cross.png')
+    tick_image = Image.open(constants.UPDATES_TICK_PATH)
+    cross_image = Image.open(constants.CROSS_PNG_PATH)
     image = ImageGrab.grab()
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype('arial', 80)

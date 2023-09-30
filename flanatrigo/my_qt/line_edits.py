@@ -38,7 +38,7 @@ class HotkeyLineEdit(QtWidgets.QLineEdit):
         self.button_clear.setFlat(True)
         self.button_clear.setFixedSize(QtCore.QSize(20, 20))
         self.button_clear.setIconSize(QtCore.QSize(16, 16))
-        self.button_clear.setIcon(QtGui.QIcon(constants.CROSS_PATH))
+        self.button_clear.setIcon(QtGui.QIcon(str(constants.CROSS_SVG_PATH)))
         layout.addWidget(self.button_clear, alignment=QtCore.Qt.AlignRight)
 
         self.button_clear.hide()

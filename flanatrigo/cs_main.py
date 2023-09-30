@@ -6,7 +6,7 @@ import clr
 import constants
 from models.enums import Device
 
-for path in pathlib.Path(constants.DLLS_PATH).iterdir():
+for path in constants.DLLS_PATH.iterdir():
     clr.AddReference(str(path.with_suffix('')))
 
 # noinspection PyUnresolvedReferences
