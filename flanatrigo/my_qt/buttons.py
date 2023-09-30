@@ -38,7 +38,7 @@ class TitleButton(QtWidgets.QPushButton):
     def connect_signals(self):
         self.signal_resize.connect(
             lambda: self.setGeometry(
-                self.parent.width() - self.size[0] * self.index - self.right_margin,
+                self.parent.width() - self.size[0] * (self.index + 1) - self.right_margin,
                 self.top_margin,
                 self.size[0],
                 self.size[1]
