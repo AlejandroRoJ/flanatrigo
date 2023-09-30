@@ -123,6 +123,8 @@ PICKER_MENU_WORDS = ('jugar', 'notas', 'trayectoria', 'colección', 'agentes', '
 PINNED = False
 RAGE_COLOR = (90, 30, 30)
 RECLICK_WAITING_SECONDS = 2
+RELEASES_API_PARAMS = {'pe_page': 1}
+RELEASES_API_URL = 'https://api.github.com/repos/alberlc/flanatrigo/releases'
 RESIZE_AREA_CORNER_FACTOR = 2
 RESIZE_AREA_SIZE = 7
 SCREEN_SIZE = (1920, 1080)
@@ -134,7 +136,5 @@ MAIN_PATH = PYTHON_SOURCE_PATH / 'main.py'
 # Updater app
 UPDATER_APP_NAME = 'Updater'
 UPDATER_SUB_APP_PATH = APP_PATH / UPDATER_APP_NAME
-RELEASES_API_URL = 'https://api.github.com/repos/alberlc/flanatrigo/releases'
-RELEASES_API_PARAMS = {'pe_page': 1}
 UPDATER_EXE_PATH = UPDATER_SUB_APP_PATH / f'{UPDATER_APP_NAME}.exe'
 UPDATER_MAIN_PATH = PYTHON_SOURCE_PATH / f'{UPDATER_APP_NAME.lower()}_main.py'
