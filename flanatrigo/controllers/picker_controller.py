@@ -9,12 +9,12 @@ from PySide6 import QtGui, QtWidgets
 
 import color_utils
 import constants
-from controllers.controller import Controller
+from controllers.bases import SalvableController
 from exceptions import NotFoundError
 from models.enums import PickerState
 
 
-class PickerController(Controller):
+class PickerController(SalvableController):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.screen_size = QtWidgets.QApplication.primaryScreen().size()

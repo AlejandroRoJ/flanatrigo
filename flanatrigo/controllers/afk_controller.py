@@ -5,10 +5,10 @@ import keyboard
 import mouse
 
 import constants
-from controllers.controller import Controller
+from controllers.bases import SalvableController
 
 
-class AFKController(Controller):
+class AFKController(SalvableController):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.thread = None

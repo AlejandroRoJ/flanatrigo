@@ -2,12 +2,12 @@ import multiprocessing
 from abc import ABC
 from typing import Any
 
-from controllers.controller import Controller
+from controllers.bases import SalvableController
 from my_qt.sliders import AgileSlider
 from my_qt.spin_boxes import NoWheelDoubleSpinBox, NoWheelSpinBox
 
 
-class CSController(Controller, ABC):
+class CSController(SalvableController, ABC):
     def __init__(self, cs_queue: multiprocessing.Queue, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.cs_queue = cs_queue

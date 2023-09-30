@@ -7,12 +7,17 @@ from models.salvable import Salvable
 from my_qt.line_edits import HotkeyLineEdit
 from my_qt.sliders import AgileSlider
 from my_qt.spin_boxes import NoWheelDoubleSpinBox, NoWheelSpinBox
-from my_qt.widgets import CentralWidget
+from my_qt.widgets import FlanaTrigoCentralWidget
 
 
-class Controller(Salvable, ABC):
-    def __init__(self, config: Config, gui: CentralWidget):
-        super().__init__(config)
+class Controller(ABC):
+    def __init__(self, gui: FlanaTrigoCentralWidget):
+        self.gui = gui
+
+
+class SalvableController(Salvable, Controller, ABC):
+    def __init__(self, config: Config, gui: FlanaTrigoCentralWidget):
+        super().__init__(config, gui)
         self.gui = gui
 
     @staticmethod
