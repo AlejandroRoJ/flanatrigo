@@ -2131,14 +2131,14 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QLabel" name="label_test_mode">
+             <widget class="QLabel" name="label_debug_mode">
               <property name="text">
                <string>Modo</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="combo_test_mode">
+             <widget class="QComboBox" name="combo_debug_mode">
               <item>
                <property name="text">
                 <string>Ninguno</string>

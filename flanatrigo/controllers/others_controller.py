@@ -56,7 +56,7 @@ class OthersController(Loggable, CSController):
         self.config.load()
 
         self.gui.spin_volume.setValue(self.config.volume)
-        self.gui.combo_test_mode.setCurrentIndex(self.config.test_mode)
+        self.gui.combo_debug_mode.setCurrentIndex(self.config.debug_mode)
         self.gui.check_logs.setChecked(self.config.logs_state)
         self.gui.line_logs_mark_button.add_selected_buttons(self.config.logs_mark_button)
         self.gui.set_updates_theme(self.updates_state)
@@ -97,12 +97,12 @@ class OthersController(Loggable, CSController):
         if not message_box.exec():
             self.logger.clear()
 
-    def on_combo_test_mode_change(self, index: int):
-        self.config.test_mode = index
+    def on_combo_debug_mode_change(self, index: int):
+        self.config.debug_mode = index
         self.save_config()
-        self._send_cs_attribute('test_mode', index)
+        self._send_cs_attribute('debug_mode', index)
         AutoHotkeyInterface.close()
-        AutoHotkeyInterface.test_mode = index
+        AutoHotkeyInterface.debug_mode = index
         if self.gui.check_trigger.isChecked():
             AutoHotkeyInterface.start()
 

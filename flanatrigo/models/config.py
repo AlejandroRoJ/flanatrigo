@@ -41,7 +41,7 @@ class Config:
     defuser_advance: float = constants.DEFUSER_ADVANCE
 
     volume: int = constants.VOLUME
-    test_mode: int = constants.TEST_MODE
+    debug_mode: int = constants.DEBUG_MODE
     logs_state: bool = constants.LOGS_STATE
     logs_mark_button: set[Button] = field(default_factory=lambda: constants.LOGS_MARK_BUTTON)
     auto_updates: bool = constants.AUTO_UPDATES

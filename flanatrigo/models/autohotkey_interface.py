@@ -22,7 +22,7 @@ class AutoHotkeyInterface:
     color: tuple[int, int, int] = constants.COLOR
     tolerance: int = constants.TOLERANCE
     cadence: float = constants.CADENCE
-    test_mode: int = constants.TEST_MODE
+    debug_mode: int = constants.DEBUG_MODE
 
     @classmethod
     def close(cls):
@@ -70,7 +70,7 @@ class AutoHotkeyInterface:
 
     @classmethod
     def write_script(cls):
-        if cls.test_mode:
+        if cls.debug_mode:
             action_code = 'SoundBeep(1000, 100)'
         else:
             action_code = f'''

@@ -51,7 +51,7 @@ DEFUSER_ADVANCE = 0.065
 
 # Others defaults
 VOLUME = 50
-TEST_MODE = 0
+DEBUG_MODE = 0
 LOGS_STATE = False
 LOGS_MARK_BUTTON = {Button(66, 'f8', Device.KEYBOARD, is_numpad=False)}
 VERSION = 'v1.3.0'

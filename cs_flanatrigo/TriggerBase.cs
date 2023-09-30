@@ -22,8 +22,8 @@ namespace CSFlanaTrigo
             _wrapper = wrapper;
             _mouse = new Mouse(_wrapper);
 
-            _wrapper.OnTestModeChanged += OnTestModeChanged;
-            OnTestModeChanged(TestMode.None);
+            _wrapper.OnDebugModeChanged += OnDebugModeChanged;
+            OnDebugModeChanged(DebugMode.None);
         }
 
         public abstract bool ColorSearch(int x, int y, int offset, byte blue, byte green, byte red);
@@ -93,27 +93,27 @@ namespace CSFlanaTrigo
 
         private void OnEnemyDetected()
         {
-            switch (_wrapper.TestMode)
+            switch (_wrapper.DebugMode)
             {
-                case TestMode.None:
+                case DebugMode.None:
                     _mouse.Click();
                     break;
-                case TestMode.Beep:
+                case DebugMode.Beep:
                     Console.Beep(1000, 100);
                     break;
             }
         }
 
-        private void OnTestModeChanged(TestMode testMode)
+        private void OnDebugModeChanged(DebugMode debugMode)
         {
-            switch (testMode)
+            switch (debugMode)
             {
-                case TestMode.None:
-                case TestMode.Beep:
+                case DebugMode.None:
+                case DebugMode.Beep:
                     _pixelSearchFunc = PixelSearch;
                     _colorSearchFunc = ColorSearch;
                     break;
-                case TestMode.Console:
+                case DebugMode.Console:
                     _pixelSearchFunc = ConsolePixelSearch;
                     _colorSearchFunc = ConsoleColorSearch;
                     break;

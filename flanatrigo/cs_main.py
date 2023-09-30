@@ -10,7 +10,7 @@ for path in constants.DLLS_PATH.iterdir():
     clr.AddReference(str(path.with_suffix('')))
 
 # noinspection PyUnresolvedReferences
-from CSFlanaTrigo import Autodefuser, TestMode, Trigger, TriggerMode, Wrapper
+from CSFlanaTrigo import Autodefuser, DebugMode, Trigger, TriggerMode, Wrapper
 # noinspection PyPackageRequirements, PyUnresolvedReferences
 from System.Drawing import Color
 
@@ -52,7 +52,7 @@ def main(queue: multiprocessing.Queue):
     wrapper.RageImmobility = int(constants.RAGE_IMMOBILITY * 1000)
     wrapper.Tolerance = constants.TOLERANCE
     wrapper.TriggerMode = TriggerMode(constants.RAGE_MODE)
-    wrapper.TestMode = TestMode(constants.TEST_MODE)
+    wrapper.DebugMode = DebugMode(constants.DEBUG_MODE)
     wrapper.ConsoleModeSleep = int(constants.CONSOLE_MODE_SLEEP * 1000)
     update_size()
 
@@ -93,8 +93,8 @@ def main(queue: multiprocessing.Queue):
                 wrapper.RageTolerance = rage_tolerance
             # case 'restart_rage_timer', _:
             #     wrapper.RestartRageTimer()
-            case 'test_mode', test_mode:
-                wrapper.TestMode = TestMode(test_mode)
+            case 'debug_mode', debug_mode:
+                wrapper.DebugMode = DebugMode(debug_mode)
             case 'defuser', state if state:
                 autodefuser.Start()
             case 'defuser', _:

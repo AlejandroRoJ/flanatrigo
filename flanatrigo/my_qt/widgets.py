@@ -37,7 +37,7 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
     label_defuser_press_button: QtWidgets.QLabel
     label_defuser_advance: QtWidgets.QLabel
     label_volume: QtWidgets.QLabel
-    label_test_mode: QtWidgets.QLabel
+    label_debug_mode: QtWidgets.QLabel
     label_logs_mark: QtWidgets.QLabel
     label_version: QtWidgets.QLabel
 
@@ -52,7 +52,7 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
     line_logs_mark_button: HotkeyLineEdit
 
     combo_trigger_backend: QtWidgets.QComboBox
-    combo_test_mode: QtWidgets.QComboBox
+    combo_debug_mode: QtWidgets.QComboBox
 
     button_color: QtWidgets.QPushButton
     button_restore_config: QtWidgets.QPushButton
@@ -187,7 +187,7 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
         self.line_logs_mark_button.textChanged.connect(lambda: self.others_controller.on_line_buttons_change(self.line_logs_mark_button))
 
         self.combo_trigger_backend.currentIndexChanged.connect(self.trigger_controller.on_combo_trigger_backend_change)
-        self.combo_test_mode.currentIndexChanged.connect(self.others_controller.on_combo_test_mode_change)
+        self.combo_debug_mode.currentIndexChanged.connect(self.others_controller.on_combo_debug_mode_change)
 
         self.button_color.clicked.connect(self.trigger_controller.open_color_dialog)
         self.button_restore_config.clicked.connect(self.others_controller.restore_config)

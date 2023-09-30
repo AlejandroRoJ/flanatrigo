@@ -1,6 +1,6 @@
 ﻿namespace CSFlanaTrigo
 {
-    public enum TestMode
+    public enum DebugMode
     {
         None,
         Beep,

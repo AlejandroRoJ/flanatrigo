@@ -47,25 +47,25 @@ namespace CSFlanaTrigo
             }
         }
         public int RageTolerance { get; set; }
-        public TestMode TestMode
+        public DebugMode DebugMode
         {
-            get => _testMode;
+            get => _debugMode;
             set
             {
-                if (_testMode != value)
+                if (_debugMode != value)
                 {
-                    _testMode = value;
-                    OnTestModeChanged?.Invoke(_testMode);
+                    _debugMode = value;
+                    OnDebugModeChanged?.Invoke(_debugMode);
                 }
             }
         }
         public int ConsoleModeSleep { get; set; }
         public event Action<int>? OnRageImmobilityChanged;
-        public event Action<TestMode>? OnTestModeChanged;
+        public event Action<DebugMode>? OnDebugModeChanged;
         private Color _color;
         private int _tolerance;
         private int _rageImmobility;
-        private TestMode _testMode;
+        private DebugMode _debugMode;
 
         private void UpdateRanges()
         {

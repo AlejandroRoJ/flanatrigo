@@ -230,7 +230,7 @@ class TriggerController(Loggable, CSController):
         self._send_cs_attribute('tolerance', self.config.tolerance)
         self._send_cs_attribute('rage_immobility', self.config.rage_immobility)
         self._send_cs_attribute('rage_tolerance', self.config.rage_tolerance)
-        self._send_cs_attribute('test_mode', self.config.test_mode)
+        self._send_cs_attribute('debug_mode', self.config.debug_mode)
         AutoHotkeyInterface.screen_size = (screen_size.width(), screen_size.height())
         AutoHotkeyInterface.detector_size = self.config.detector_size
         AutoHotkeyInterface.detector_horizontal = self.config.detector_horizontal
@@ -238,7 +238,7 @@ class TriggerController(Loggable, CSController):
         AutoHotkeyInterface.color = self.config.color
         AutoHotkeyInterface.tolerance = self.config.tolerance
         AutoHotkeyInterface.cadence = self.config.cadence
-        AutoHotkeyInterface.test_mode = self.config.test_mode
+        AutoHotkeyInterface.debug_mode = self.config.debug_mode
         AutoHotkeyInterface.update_region()
         self.load_audio()
         self.gui.check_trigger.setChecked(constants.TRIGGER_STATE)
@@ -325,12 +325,12 @@ class TriggerController(Loggable, CSController):
             self.gui.check_trigger.click()
         self.config.trigger_backend = index
         if self.config.trigger_backend == 1:
-            self.gui.combo_test_mode.model().item(2).setEnabled(False)
-            if self.gui.combo_test_mode.currentIndex() == 2:
-                self.config.test_mode = 1
-                self.gui.combo_test_mode.setCurrentIndex(1)
+            self.gui.combo_debug_mode.model().item(2).setEnabled(False)
+            if self.gui.combo_debug_mode.currentIndex() == 2:
+                self.config.debug_mode = 1
+                self.gui.combo_debug_mode.setCurrentIndex(1)
         else:
-            self.gui.combo_test_mode.model().item(2).setEnabled(True)
+            self.gui.combo_debug_mode.model().item(2).setEnabled(True)
         self.config.rage_mode = False
         self.save_config()
         AutoHotkeyInterface.close()
