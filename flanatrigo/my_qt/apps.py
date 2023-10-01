@@ -4,8 +4,10 @@ import pathlib
 import shutil
 import subprocess
 import threading
+import time
 import zipfile
-from collections.abc import Generator
+from collections.abc import Callable, Generator
+from typing import Generic, TypeVar
 
 import requests
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -24,7 +26,11 @@ from my_qt.bases import MixinMeta
 from my_qt.windows import FlanaTrigoWindow, UpdaterWindow
 
 
-class BlueDarkApp(QtWidgets.QApplication, metaclass=MixinMeta):
+class AppBase(QtWidgets.QApplication, metaclass=MixinMeta):
+    pass
+
+
+class BlueDarkApp(AppBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setStyle('fusion')
@@ -36,13 +42,36 @@ class BlueDarkApp(QtWidgets.QApplication, metaclass=MixinMeta):
         self.setPalette(palette)
 
 
-class FlanaTrigoApp(Loggable, Salvable, BlueDarkApp):
+T = TypeVar('T')
+
+
+class UpdatableApp(AppBase, Generic[T]):
     close_signal = QtCore.Signal()
 
-    def __init__(self, logger: Logger, cs_queue: multiprocessing.Queue, config: Config):
-        super().__init__(logger, config)
+    def __init__(self, main_window_factory: Callable[[], T], *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.main_window = main_window_factory()
 
-        self.main_window = FlanaTrigoWindow(config)
+    def connect_signals(self):
+        self.close_signal.connect(self.main_window.close)
+
+    @staticmethod
+    def _delete_old_directory(path: str | pathlib.Path):
+        while True:
+            try:
+                shutil.rmtree(path)
+            except FileNotFoundError:
+                break
+            except PermissionError:
+                time.sleep(0.1)
+            else:
+                break
+
+
+class FlanaTrigoApp(Loggable, Salvable, UpdatableApp[FlanaTrigoWindow], BlueDarkApp):
+    def __init__(self, logger: Logger, cs_queue: multiprocessing.Queue, config: Config):
+        super().__init__(logger, config, lambda: FlanaTrigoWindow(config))
+
         self.trigger_controller = TriggerController(logger, cs_queue, config, self.main_window.central_widget)
         self.picker_controller = PickerController(config, self.main_window.central_widget)
         self.afk_controller = AFKController(config, self.main_window.central_widget)
@@ -59,23 +88,14 @@ class FlanaTrigoApp(Loggable, Salvable, BlueDarkApp):
         )
         self.load_config()
 
-    @staticmethod
-    def _update_updater():
+    def _update_updater(self):
         if (path := pathlib.Path(f'{constants.UPDATER_SUB_APP_PATH}_')).exists():
             new_path = path.with_stem(constants.UPDATER_APP_NAME)
-            try:
-                shutil.rmtree(new_path)
-            except FileNotFoundError:
-                pass
+            self._delete_old_directory(new_path)
             path.rename(new_path)
-
-    def close(self):
-        self.main_window.close()
 
     def connect_signals(self, *args):
         self.main_window.connect_signals(*args)
-
-        self.close_signal.connect(self.main_window.close)
 
     def load_config(self):
         self.main_window.load_config()
@@ -86,18 +106,15 @@ class FlanaTrigoApp(Loggable, Salvable, BlueDarkApp):
         self.others_controller.load_config()
 
 
-class UpdaterApp(BlueDarkApp):
-    close_signal = QtCore.Signal()
+class UpdaterApp(UpdatableApp[UpdaterWindow], BlueDarkApp):
     progress_signal = QtCore.Signal(int)
     state_signal = QtCore.Signal(str)
 
     def __init__(self, zip_url: str):
-        super().__init__()
+        super().__init__(lambda: UpdaterWindow())
 
-        self.main_window = UpdaterWindow()
         self.gui = self.main_window.central_widget
 
-        self.close_signal.connect(self.main_window.close)
         self.progress_signal.connect(self.gui.update_progress, QtCore.Qt.QueuedConnection)
         self.state_signal.connect(self.gui.update_state, QtCore.Qt.QueuedConnection)
 
@@ -131,12 +148,9 @@ class UpdaterApp(BlueDarkApp):
             config_text = constants.CONFIG_PATH.read_text()
         except FileNotFoundError:
             config_text = '{}'
+        self._delete_old_directory(constants.SUB_APP_PATH)
         with zipfile.ZipFile(buffer) as zip_file:
             files = zip_file.filelist[1:]
-            try:
-                shutil.rmtree(constants.SUB_APP_PATH)
-            except FileNotFoundError:
-                pass
             for i, file in enumerate(iter_zip_files(files), start=1):
                 zip_file.extract(file, constants.APP_PATH)
                 self.progress_signal.emit(round(i / len(files) * 100))
