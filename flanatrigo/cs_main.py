@@ -35,7 +35,7 @@ def main(queue: multiprocessing.Queue):
     def update_size():
         wrapper.DetectorSize = detector_size
         wrapper.DetectorX = (screen_size[0] - detector_size) // 2 + horizontal_offset
-        wrapper.DetectorY = (screen_size[1] - detector_size) // 2 + vertical_offset
+        wrapper.DetectorY = (screen_size[1] - detector_size) // 2 - vertical_offset
 
     screen_size = constants.SCREEN_SIZE
     detector_size = constants.DETECTOR_SIZE
