@@ -53,11 +53,26 @@ class TitleButton(QtWidgets.QPushButton):
         self.setFlat(True)
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent):
+        self.parent.mouseMoveEvent(
+            QtGui.QMouseEvent(event.type(), event.windowPos(), event.button(), event.buttons(), event.modifiers())
+        )
         super().mouseMoveEvent(event)
         if self.rect().contains(event.pos()):
             self.setFlat(False)
         else:
             self.setFlat(True)
+
+    def mousePressEvent(self, event: QtGui.QMouseEvent):
+        self.parent.mousePressEvent(
+            QtGui.QMouseEvent(event.type(), event.windowPos(), event.button(), event.buttons(), event.modifiers())
+        )
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event: QtGui.QMouseEvent):
+        self.parent.mouseReleaseEvent(
+            QtGui.QMouseEvent(event.type(), event.windowPos(), event.button(), event.buttons(), event.modifiers())
+        )
+        super().mouseReleaseEvent(event)
 
     def updateGeometry(self):
         super().updateGeometry()
