@@ -1,14 +1,9 @@
 import multiprocessing
 
-import pytesseract
-
-import constants
 import cs_main
 from models.config import Config
 from models.logger import Logger
 from my_qt.apps import FlanaTrigoApp
-
-pytesseract.pytesseract.tesseract_cmd = str(constants.PYTESSERACT_PATH)
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()

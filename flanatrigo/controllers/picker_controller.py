@@ -3,15 +3,12 @@ import time
 
 import mouse
 import pyautogui
-import pytesseract
-from PIL import ImageGrab
 from PySide6 import QtGui, QtWidgets
 
 import color_utils
 import constants
 from controllers.bases import SalvableController
 from exceptions import NotFoundError
-from models.enums import PickerState
 
 
 class PickerController(SalvableController):
@@ -37,10 +34,7 @@ class PickerController(SalvableController):
             int(self.screen_size.height() * constants.CONFIRM_PIEZE_REGION_FACTORS[3])
         )
         self.selected_agent = None
-        self.state = PickerState.MENU
-        self.thread_event = threading.Event()
-        self.thread = threading.Thread(target=self._run_picker, daemon=True)
-        self.thread.start()
+        self.thread = None
 
     def _click_agent(self, name: str, n_clicks=2):
         try:
@@ -87,52 +81,24 @@ class PickerController(SalvableController):
             constants.CONFIRM_PIEZE_COLOR_TOLERANCE
         )
 
-    def _picking(self):
-        try:
-            self._click_agent(self.gui.list_agents.currentItem().name)
-        except (AttributeError, NotFoundError):
-            pass
-        else:
-            self.state = PickerState.GAME
-            self._update_state_label()
-
     def _reclick(self, distance=300, duration=0.02):
         mouse.move(0, -distance, absolute=False, duration=duration, steps_per_second=self.gui.spin_picker_steps.value())
         mouse.move(0, distance, absolute=False, duration=duration, steps_per_second=self.gui.spin_picker_steps.value())
         mouse.click()
 
     def _run_picker(self):
-        while self.thread_event.wait():
-            match self.state:
-                case PickerState.MENU:
-                    self._waiting_in_menu()
-                case PickerState.PICK:
-                    self._picking()
-                case PickerState.GAME:
-                    self._waiting_in_game()
+        def thread_target():
+            while self.gui.check_picker.isChecked():
+                try:
+                    self._click_agent(self.gui.list_agents.currentItem().name)
+                except (AttributeError, NotFoundError):
+                    pass
+                else:
+                    self.gui.check_picker.setChecked(False)
 
-    def _update_state_label(self):
-        match self.state:
-            case PickerState.MENU:
-                self.gui.label_picker_state.setText('En el menú')
-            case PickerState.PICK:
-                self.gui.label_picker_state.setText('Escogiendo agentes')
-            case PickerState.GAME:
-                self.gui.label_picker_state.setText('En partida')
-
-    def _waiting_in_game(self):
-        words = set(pytesseract.image_to_string(ImageGrab.grab()).lower().split())
-        if any(word in words for word in constants.PICKER_MENU_WORDS):
-            self.state = PickerState.MENU
-            self._update_state_label()
-        else:
-            time.sleep(constants.PICKER_IN_GAME_SLEEP_SECONDS)
-
-    def _waiting_in_menu(self):
-        words = set(pytesseract.image_to_string(ImageGrab.grab()).lower().split())
-        if not any(word in words for word in constants.PICKER_MENU_WORDS):
-            self.state = PickerState.PICK
-            self._update_state_label()
+        if not self.thread or not self.thread.is_alive():
+            self.thread = threading.Thread(target=thread_target, daemon=True)
+            self.thread.start()
 
     def load_config(self):
         self.config.load()
@@ -165,13 +131,7 @@ class PickerController(SalvableController):
 
     def on_check_picker_change(self, state: bool):
         if state and self.gui.list_agents.currentItem():
-            self.thread_event.set()
-            self.gui.label_picker_state.show()
-        else:
-            self.thread_event.clear()
-            self.gui.label_picker_state.hide()
-            self.state = PickerState.MENU
-            self._update_state_label()
+            self._run_picker()
 
     def on_item_select(self, item: QtWidgets.QListWidgetItem, _previous: QtWidgets.QListWidgetItem):
         self.config.picker_current_agent = getattr(item, 'name', None)

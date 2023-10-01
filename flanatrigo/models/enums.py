@@ -6,12 +6,6 @@ class Device(Enum):
     MOUSE = auto()
 
 
-class PickerState(Enum):
-    MENU = auto()
-    PICK = auto()
-    GAME = auto()
-
-
 class UpdatesState(Enum):
     UNKNOW = auto()
     SEARCHING = auto()

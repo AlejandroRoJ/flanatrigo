@@ -25,7 +25,6 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
     label_cadence: QtWidgets.QLabel
     label_rage_immobility: QtWidgets.QLabel
     label_rage_tolerance: QtWidgets.QLabel
-    label_picker_state: QtWidgets.QLabel
     label_picker_activation_button: QtWidgets.QLabel
     label_picker_delay: QtWidgets.QLabel
     label_picker_duration: QtWidgets.QLabel
@@ -131,7 +130,7 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
         self.check_trigger = Switch(self.tab_trigger, track_radius=8, thumb_radius=10, os_colors=False)
         self.layout_trigger_top.insertWidget(0, self.check_trigger)
         self.check_picker = Switch(self.tab_picker, track_radius=8, thumb_radius=10, os_colors=False)
-        self.tab_picker.layout().itemAt(0).insertWidget(0, self.check_picker)
+        self.tab_picker.layout().insertWidget(0, self.check_picker)
         self.check_afk = Switch(self.tab_picker, track_radius=8, thumb_radius=10, os_colors=False)
         self.tab_afk.layout().insertWidget(0, self.check_afk)
         self.check_defuser = Switch(self.tab_picker, track_radius=8, thumb_radius=10, os_colors=False)
