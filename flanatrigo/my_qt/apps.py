@@ -52,7 +52,7 @@ class UpdatableApp(AppBase, Generic[T]):
         super().__init__(*args, **kwargs)
         self.main_window = main_window_factory()
 
-    def connect_signals(self):
+    def connect_signals(self, *args):
         self.close_signal.connect(self.main_window.close)
 
     @staticmethod
@@ -95,6 +95,7 @@ class FlanaTrigoApp(Loggable, Salvable, UpdatableApp[FlanaTrigoWindow], BlueDark
             path.rename(new_path)
 
     def connect_signals(self, *args):
+        super().connect_signals(*args)
         self.main_window.connect_signals(*args)
 
     def load_config(self):
@@ -114,12 +115,15 @@ class UpdaterApp(UpdatableApp[UpdaterWindow], BlueDarkApp):
         super().__init__(lambda: UpdaterWindow())
 
         self.gui = self.main_window.central_widget
+        thread = threading.Thread(target=self._download, args=(zip_url,), daemon=True)
 
+        self.connect_signals()
+        thread.start()
+
+    def connect_signals(self, *args):
+        super().connect_signals(*args)
         self.progress_signal.connect(self.gui.update_progress, QtCore.Qt.QueuedConnection)
         self.state_signal.connect(self.gui.update_state, QtCore.Qt.QueuedConnection)
-
-        thread = threading.Thread(target=self._download, args=(zip_url,), daemon=True)
-        thread.start()
 
     def _download(self, zip_url: str):
         self.state_signal.emit('Descargando actualizaciones...')
