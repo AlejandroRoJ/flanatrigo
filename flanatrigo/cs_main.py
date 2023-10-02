@@ -27,9 +27,15 @@ def main(queue: multiprocessing.Queue):
         wrapper.DefuserKeyboardScanCodes = keyboard_scan_codes
         wrapper.DefuserMouseButtonNames = mouse_button_names
 
-    def update_defuser_region():
-        wrapper.DefuserRegion = [
-            round(size * factor) for size, factor in zip((*screen_size,) * 2, constants.DEFUSER_REGION_FACTORS)
+    def update_defuser_regions():
+        wrapper.DefuserBombRegion = [
+            round(size * factor) for size, factor in zip((*screen_size,) * 2, constants.DEFUSER_BOMB_REGION_FACTORS)
+        ]
+        wrapper.DefuserPointARegion = [
+            round(size * factor) for size, factor in zip((*screen_size,) * 2, constants.DEFUSER_POINT_A_REGION_FACTORS)
+        ]
+        wrapper.DefuserPointBRegion = [
+            round(size * factor) for size, factor in zip((*screen_size,) * 2, constants.DEFUSER_POINT_B_REGION_FACTORS)
         ]
 
     def update_size():
@@ -58,10 +64,12 @@ def main(queue: multiprocessing.Queue):
     autodefuser = Autodefuser(wrapper)
     wrapper.DefuseSeconds = int(constants.DEFUSE_SECONDS * 1000)
     wrapper.DefuseSecondsExtra = int(constants.DEFUSE_SECONDS_EXTRA * 1000)
+    wrapper.DefuserBombColorTolerance = constants.DEFUSER_BOMB_COLOR_TOLERANCE
+    wrapper.DefuserBombColors = [Color.FromArgb(*constants.DEFUSER_BOMB_COLORS[0]), Color.FromArgb(*constants.DEFUSER_BOMB_COLORS[1])]
     wrapper.DefuserBombDuration = int(constants.DEFUSER_BOMB_DURATION * 1000)
-    wrapper.DefuserColors = [Color.FromArgb(*constants.DEFUSER_COLORS[0]), Color.FromArgb(*constants.DEFUSER_COLORS[1])]
-    wrapper.DefuserColorTolerance = constants.DEFUSER_COLOR_TOLERANCE
-    update_defuser_region()
+    wrapper.DefuserPointsColorTolerance = constants.DEFUSER_POINTS_COLOR_TOLERANCE
+    wrapper.DefuserPointsColors = [Color.FromArgb(*constants.DEFUSER_POINTS_COLORS[0])]
+    update_defuser_regions()
     update_defuser_press_button()
     wrapper.DefuserAdvance = int(constants.DEFUSER_ADVANCE * 1000)
 
@@ -73,7 +81,7 @@ def main(queue: multiprocessing.Queue):
                 trigger.Stop()
             case 'screen_size', screen_size:
                 update_size()
-                update_defuser_region()
+                update_defuser_regions()
             case 'detector_size', detector_size:
                 update_size()
             case 'detector_horizontal', horizontal_offset:

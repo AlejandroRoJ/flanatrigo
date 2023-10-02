@@ -177,7 +177,13 @@ namespace CSFlanaTrigo
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                while (!IsColorInRegion(_wrapper.DefuserRegion, _wrapper.DefuserColors, _wrapper.DefuserColorTolerance))
+                while (
+                    IsColorInRegion(_wrapper.DefuserPointARegion, _wrapper.DefuserPointsColors, _wrapper.DefuserPointsColorTolerance)
+                    ||
+                    IsColorInRegion(_wrapper.DefuserPointBRegion, _wrapper.DefuserPointsColors, _wrapper.DefuserPointsColorTolerance)
+                    ||
+                    !IsColorInRegion(_wrapper.DefuserBombRegion, _wrapper.DefuserBombColors, _wrapper.DefuserBombColorTolerance)
+                    )
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {

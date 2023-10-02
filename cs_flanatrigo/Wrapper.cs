@@ -79,10 +79,14 @@ namespace CSFlanaTrigo
         // ---------------------------------        
         public int DefuseSeconds { get; set; }
         public int DefuseSecondsExtra { get; set; }
+        public int DefuserBombColorTolerance { get; set; }
+        public Color[] DefuserBombColors { get; set; }
         public int DefuserBombDuration { get; set; }
-        public Color[] DefuserColors { get; set; }
-        public int DefuserColorTolerance { get; set; }
-        public int[] DefuserRegion { get; set; }
+        public int[] DefuserBombRegion { get; set; }
+        public int[] DefuserPointARegion { get; set; }
+        public int[] DefuserPointBRegion { get; set; }
+        public int DefuserPointsColorTolerance { get; set; }
+        public Color[] DefuserPointsColors { get; set; }
         public int[] DefuserKeyboardScanCodes
         {
             get
