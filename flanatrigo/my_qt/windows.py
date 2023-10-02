@@ -119,6 +119,7 @@ class FlanaTrigoWindow(Salvable, MovableWindow[FlanaTrigoCentralWidget]):
         self.button_minimize = TitleButton(constants.MINIMIZE_PATH, self, index=2)
         self.button_pin = TitleButton(constants.PIN_PATH, self, index=3, icon_size=(12, 12), checkable=True)
 
+        self.resize(self.sizeHint())
         self.move_to_center()
         self.show()
 
@@ -334,7 +335,7 @@ class FlanaTrigoWindow(Salvable, MovableWindow[FlanaTrigoCentralWidget]):
         self.show()
 
     def sizeHint(self):
-        return QtCore.QSize(600, 600)
+        return QtCore.QSize(600, 700)
 
     def updateGeometry(self):
         super().updateGeometry()
