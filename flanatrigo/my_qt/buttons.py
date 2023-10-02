@@ -205,7 +205,7 @@ class Switch(QtWidgets.QAbstractButton):
             palette.setColor(QtGui.QPalette.ColorRole.Light, self.default_light_color)
             palette.setColor(QtGui.QPalette.ColorRole.HighlightedText, self.default_highlighted_text_color)
         else:
-            palette.setColor(QtGui.QPalette.ColorRole.Highlight, QtGui.QColor.fromRgb(79, 114, 195))
+            palette.setColor(QtGui.QPalette.ColorRole.Highlight, QtGui.QColor.fromRgb(*constants.PALETTE_HIGHLIGHT_COLOR))
             palette.setColor(QtGui.QPalette.ColorRole.Dark, QtGui.QColor.fromRgb(30, 30, 30))
             palette.setColor(QtGui.QPalette.ColorRole.Light, QtGui.QColor.fromRgb(120, 120, 120))
             palette.setColor(QtGui.QPalette.ColorRole.HighlightedText, QtGui.QColor.fromRgb(0, 0, 0))

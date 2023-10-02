@@ -1,5 +1,7 @@
 from PySide6 import QtCore, QtGui, QtWidgets
 
+import constants
+
 
 class AgileSlider(QtWidgets.QSlider):
     def __init__(self, *args, os_colors=True, **kwargs):
@@ -29,5 +31,7 @@ class AgileSlider(QtWidgets.QSlider):
         if state:
             palette.setColor(QtGui.QPalette.ColorRole.Highlight, self.default_highlight_color)
         else:
-            palette.setColor(QtGui.QPalette.ColorRole.Highlight, QtGui.QColor.fromRgb(79, 114, 195))
+            palette.setColor(
+                QtGui.QPalette.ColorRole.Highlight, QtGui.QColor.fromRgb(*constants.PALETTE_HIGHLIGHT_COLOR)
+            )
         self.setPalette(palette)

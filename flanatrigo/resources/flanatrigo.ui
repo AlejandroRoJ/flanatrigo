@@ -83,6 +83,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <item>
@@ -131,6 +132,7 @@
               <font>
                <pointsize>12</pointsize>
                <italic>false</italic>
+               <bold>false</bold>
               </font>
              </property>
              <property name="title">
@@ -157,6 +159,7 @@
                    <font>
                     <pointsize>12</pointsize>
                     <italic>false</italic>
+                    <bold>false</bold>
                    </font>
                   </property>
                   <property name="text">
@@ -193,6 +196,7 @@
                    <font>
                     <pointsize>12</pointsize>
                     <italic>false</italic>
+                    <bold>false</bold>
                    </font>
                   </property>
                   <property name="text">
@@ -206,6 +210,7 @@
                    <font>
                     <pointsize>12</pointsize>
                     <italic>false</italic>
+                    <bold>false</bold>
                    </font>
                   </property>
                   <property name="contextMenuPolicy">
@@ -227,6 +232,7 @@
               <font>
                <pointsize>12</pointsize>
                <italic>false</italic>
+               <bold>false</bold>
               </font>
              </property>
              <property name="title">
@@ -287,6 +293,7 @@
                      <font>
                       <pointsize>12</pointsize>
                       <italic>false</italic>
+                      <bold>false</bold>
                      </font>
                     </property>
                     <property name="text">
@@ -390,6 +397,7 @@
                         <font>
                          <pointsize>12</pointsize>
                          <italic>false</italic>
+                         <bold>false</bold>
                         </font>
                        </property>
                        <property name="text">
@@ -533,6 +541,7 @@
                         <font>
                          <pointsize>12</pointsize>
                          <italic>false</italic>
+                         <bold>false</bold>
                         </font>
                        </property>
                        <property name="text">
@@ -649,6 +658,7 @@
               <font>
                <pointsize>12</pointsize>
                <italic>false</italic>
+               <bold>false</bold>
               </font>
              </property>
              <property name="title">
@@ -704,6 +714,7 @@
                        <font>
                         <pointsize>12</pointsize>
                         <italic>false</italic>
+                        <bold>false</bold>
                        </font>
                       </property>
                       <property name="text">
@@ -743,6 +754,7 @@
                        <font>
                         <pointsize>12</pointsize>
                         <italic>false</italic>
+                        <bold>false</bold>
                        </font>
                       </property>
                       <property name="text">
@@ -785,6 +797,7 @@
                        <font>
                         <pointsize>12</pointsize>
                         <italic>false</italic>
+                        <bold>false</bold>
                        </font>
                       </property>
                       <property name="text">
@@ -826,6 +839,7 @@
                      <font>
                       <pointsize>12</pointsize>
                       <italic>false</italic>
+                      <bold>false</bold>
                      </font>
                     </property>
                     <property name="text">
@@ -867,6 +881,7 @@
                    <font>
                     <pointsize>12</pointsize>
                     <italic>false</italic>
+                    <bold>false</bold>
                    </font>
                   </property>
                   <property name="text">
@@ -956,6 +971,7 @@
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
+                 <bold>false</bold>
                 </font>
                </property>
                <property name="text">
@@ -970,6 +986,7 @@
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
+                   <bold>false</bold>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -1006,6 +1023,7 @@
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
+                   <bold>false</bold>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -1040,6 +1058,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="title">
@@ -1074,6 +1093,7 @@
                     <property name="font">
                      <font>
                       <pointsize>12</pointsize>
+                      <bold>false</bold>
                      </font>
                     </property>
                     <property name="text">
@@ -1088,6 +1108,7 @@
                       <property name="font">
                        <font>
                         <pointsize>12</pointsize>
+                        <bold>false</bold>
                        </font>
                       </property>
                       <property name="focusPolicy">
@@ -1118,6 +1139,7 @@
                       <property name="font">
                        <font>
                         <pointsize>12</pointsize>
+                        <bold>false</bold>
                        </font>
                       </property>
                       <property name="focusPolicy">
@@ -1179,6 +1201,7 @@
                    <font>
                     <pointsize>12</pointsize>
                     <italic>false</italic>
+                    <bold>false</bold>
                    </font>
                   </property>
                   <property name="text">
@@ -1276,6 +1299,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -1288,6 +1312,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="contextMenuPolicy">
@@ -1316,6 +1341,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -1330,6 +1356,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="focusPolicy">
@@ -1360,6 +1387,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="accelerated">
@@ -1402,6 +1430,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -1416,6 +1445,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="focusPolicy">
@@ -1446,6 +1476,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="accelerated">
@@ -1488,6 +1519,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -1502,6 +1534,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="focusPolicy">
@@ -1535,6 +1568,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="accelerated">
@@ -1613,6 +1647,7 @@
          <property name="font">
           <font>
            <pointsize>12</pointsize>
+           <bold>false</bold>
           </font>
          </property>
          <property name="title">
@@ -1635,6 +1670,7 @@
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -1647,6 +1683,7 @@
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
+                <bold>false</bold>
                </font>
               </property>
               <property name="contextMenuPolicy">
@@ -1675,6 +1712,7 @@
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
+                <bold>false</bold>
                </font>
               </property>
               <property name="text">
@@ -1687,6 +1725,7 @@
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
+                <bold>false</bold>
                </font>
               </property>
               <property name="contextMenuPolicy">
@@ -1718,6 +1757,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -1732,6 +1772,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="focusPolicy">
@@ -1759,6 +1800,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="accelerated">
@@ -1824,6 +1866,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -1836,6 +1879,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="contextMenuPolicy">
@@ -1864,6 +1908,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -1876,6 +1921,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="contextMenuPolicy">
@@ -1904,6 +1950,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -1918,6 +1965,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="focusPolicy">
@@ -1948,6 +1996,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="accelerated">
@@ -2016,6 +2065,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -2030,6 +2080,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="maximum">
@@ -2057,6 +2108,7 @@
              <property name="font">
               <font>
                <pointsize>12</pointsize>
+               <bold>false</bold>
               </font>
              </property>
              <property name="accelerated">
@@ -2085,6 +2137,7 @@
          <property name="font">
           <font>
            <pointsize>12</pointsize>
+           <bold>false</bold>
           </font>
          </property>
          <property name="text">
@@ -2097,6 +2150,7 @@
          <property name="font">
           <font>
            <pointsize>12</pointsize>
+           <bold>false</bold>
           </font>
          </property>
          <property name="title">
@@ -2144,6 +2198,7 @@
             <property name="font">
              <font>
               <pointsize>12</pointsize>
+              <bold>false</bold>
              </font>
             </property>
             <property name="title">
@@ -2169,6 +2224,7 @@
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
+                   <bold>false</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -2181,6 +2237,7 @@
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
+                   <bold>false</bold>
                   </font>
                  </property>
                  <property name="contextMenuPolicy">
@@ -2225,6 +2282,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">
@@ -2249,6 +2307,7 @@
            <property name="font">
             <font>
              <pointsize>12</pointsize>
+             <bold>false</bold>
             </font>
            </property>
            <property name="text">

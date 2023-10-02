@@ -126,8 +126,9 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
         self.defuser_controller = None
         self.others_controller = None
 
-        self.default_color = self.palette().button().color()
-        self.tab_proxy_style = ColoredBarTab(self.default_color, 'fusion')
+        self.default_button_color = self.palette().button().color()
+        self.default_window_text_color = self.palette().windowText().color()
+        self.tab_proxy_style = ColoredBarTab(self.default_button_color, self.default_window_text_color, 'fusion')
         self.check_trigger = Switch(self.tab_trigger, track_radius=8, thumb_radius=10, os_colors=False)
         self.layout_trigger_top.insertWidget(0, self.check_trigger)
         self.check_picker = Switch(self.tab_picker, track_radius=8, thumb_radius=10, os_colors=False)
@@ -195,10 +196,14 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
         self.button_updates.clicked.connect(self.others_controller.on_updates)
 
         self.check_trigger.clicked.connect(self.trigger_controller.on_check_trigger_change)
+        self.check_trigger.toggled.connect(self.update)
         self.check_detector.stateChanged.connect(self.trigger_controller.on_check_detector_change)
         self.check_picker.toggled.connect(self.picker_controller.on_check_picker_change)
+        self.check_picker.toggled.connect(self.update)
         self.check_afk.toggled.connect(self.afk_controller.on_check_afk_change)
+        self.check_afk.toggled.connect(self.update)
         self.check_defuser.toggled.connect(self.defuser_controller.on_check_defuser_change)
+        self.check_defuser.toggled.connect(self.update)
         self.check_select_tabs.toggled.connect(self.others_controller.on_check_select_tabs_change)
         self.check_logs.toggled.connect(self.others_controller.on_check_logs_change)
         self.check_updates.toggled.connect(self.others_controller.on_check_updates_change)
@@ -260,7 +265,7 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
         if state and self.tab.currentIndex() == 0:
             palette.setColor(palette.ColorRole.Button, QtGui.QColor.fromRgb(*constants.RAGE_COLOR))
         else:
-            palette.setColor(palette.ColorRole.Button, self.default_color)
+            palette.setColor(palette.ColorRole.Button, self.default_button_color)
             self.tab.update()
         self.tab.setPalette(palette)
 

@@ -36,7 +36,7 @@ class BlueDarkApp(AppBase):
         super().__init__(*args, **kwargs)
         self.setStyle('fusion')
         palette = self.palette()
-        palette.setColor(QtGui.QPalette.ColorRole.Highlight, QtGui.QColor.fromRgb(79, 114, 195))
+        palette.setColor(QtGui.QPalette.ColorRole.Highlight, QtGui.QColor.fromRgb(*constants.PALETTE_HIGHLIGHT_COLOR))
         palette.setColor(QtGui.QPalette.ColorRole.Dark, QtGui.QColor.fromRgb(30, 30, 30))
         palette.setColor(QtGui.QPalette.ColorRole.Light, QtGui.QColor.fromRgb(120, 120, 120))
         palette.setColor(QtGui.QPalette.ColorRole.HighlightedText, QtGui.QColor.fromRgb(0, 0, 0))
@@ -112,6 +112,10 @@ class FlanaTrigoApp(Loggable, Salvable, UpdatableApp[FlanaTrigoWindow], BlueDark
     def connect_signals(self, *args):
         super().connect_signals(*args)
         self.main_window.connect_signals(*args)
+
+    def get_active_functionalities(self) -> set[int]:
+        checks = (self.gui.check_trigger, self.gui.check_picker, self.gui.check_afk, self.gui.check_defuser)
+        return {i for i, check in enumerate(checks) if check.isChecked()}
 
     def load_config(self):
         self.config.load()
