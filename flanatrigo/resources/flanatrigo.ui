@@ -2141,7 +2141,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Seleccionar pestañas con los números</string>
+          <string>Seleccionar pestañas con números</string>
          </property>
         </widget>
        </item>
@@ -2271,6 +2271,9 @@
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_30">
+         <property name="spacing">
+          <number>12</number>
+         </property>
          <item>
           <widget class="QPushButton" name="button_updates">
            <property name="minimumSize">
