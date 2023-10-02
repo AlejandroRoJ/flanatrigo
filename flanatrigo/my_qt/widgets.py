@@ -59,6 +59,7 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
     button_updates: QtWidgets.QPushButton
 
     check_detector: QtWidgets.QCheckBox
+    check_select_tabs: QtWidgets.QCheckBox
     check_updates: QtWidgets.QCheckBox
 
     slider_detector_size: AgileSlider
@@ -198,6 +199,7 @@ class FlanaTrigoCentralWidget(QtWidgets.QWidget):
         self.check_picker.toggled.connect(self.picker_controller.on_check_picker_change)
         self.check_afk.toggled.connect(self.afk_controller.on_check_afk_change)
         self.check_defuser.toggled.connect(self.defuser_controller.on_check_defuser_change)
+        self.check_select_tabs.toggled.connect(self.others_controller.on_check_select_tabs_change)
         self.check_logs.toggled.connect(self.others_controller.on_check_logs_change)
         self.check_updates.toggled.connect(self.others_controller.on_check_updates_change)
 

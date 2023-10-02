@@ -56,6 +56,7 @@ class OthersController(Loggable, CSController):
         self.config.load()
 
         self.gui.spin_volume.setValue(self.config.volume)
+        self.gui.check_select_tabs.setChecked(self.config.select_tabs_with_numbers)
         self.gui.combo_debug_mode.setCurrentIndex(self.config.debug_mode)
         self.gui.check_logs.setChecked(self.config.logs_state)
         self.gui.line_logs_mark_button.add_selected_buttons(self.config.logs_mark_button)
@@ -74,6 +75,11 @@ class OthersController(Loggable, CSController):
             self.logger.start()
         self.config.logs_state = state
         self.save_config()
+
+    def on_check_select_tabs_change(self, state: bool):
+        self.config.select_tabs_with_numbers = state
+        self.save_config()
+        QtWidgets.QApplication.instance().update_hooks()
 
     def on_check_updates_change(self, state: bool):
         if state:
